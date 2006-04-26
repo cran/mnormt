@@ -16,12 +16,12 @@ rmt(n = 1, mean = rep(0, d), S, df=Inf)
 sadmvt(df, lower, upper, mean, S, maxpts = 2000 * d, abseps = 1e-06, releps = 0) 
 }
 \arguments{
-  \item{x}{ for \code{dmt}, this is either a vector of length \code{d} or 
-    a matrix with \code{d} columns (where \code{d=ncol(varcov)}), giving
+  \item{x}{ for \code{dmt}, this is either a vector of length \code{d} 
+    or a matrix with \code{d} columns, where \code{d=ncol(S)}, giving
     the coordinates of the point(s) where the density must be evaluated;
     for \code{pmt}, only a vector of length \code{d} is allowed,
     and \code{d} cannot exceed 20}
-  \item{mean}{a numeric vector representing the location paraemter
+  \item{mean}{a numeric vector representing the location parameter
          of the distribution (equal to the expected value when \code{df>1});
            it must be of length \code{d}, as defined above}
   \item{S}{a positive definite matrix representing the 
