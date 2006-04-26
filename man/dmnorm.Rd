@@ -17,7 +17,7 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000 * d, abseps = 1e-06, releps = 0
 }
 \arguments{
   \item{x}{ for \code{dmnorm}, this is either a vector of length \code{d} or 
-           a matrix with \code{d} columns (where \code{d=ncol(varcov)}),
+           a matrix with \code{d} columns, where \code{d=ncol(varcov)},
            giving the coordinates of the point(s) where the density must
            be evaluated;
           for \code{pmnorm}, only a vector of length \code{d} is allowed,

@@ -133,11 +133,9 @@ sadmvt <- function(df, lower, upper, mean, S,
 .First.lib <- function(library, pkg)
 { 
    Rv <- R.Version()
-   if(Rv$major == 0 |(Rv$major == 2 && Rv$minor < 2.0))
+   if(Rv$major < 2 |(Rv$major == 2 && Rv$minor < 2.0))
         stop("This package requires R 2.2.0 or later")
-   fcode <- file.path("../libs", paste("mnormt", .Platform$dynlib.ext, sep=""))
-   library.dynam(fcode)
-   # if(interactive()) cat("Library 'mnormt'\n")
+   library.dynam("mnormt", pkg, library)
    invisible()
 }
 
