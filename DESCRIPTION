@@ -1,6 +1,6 @@
 Package: mnormt
-Version: 1.0-1
-Date: 2006-04-26
+Version: 1.1-0
+Date: 2006-10-09
 Title: The multivariate normal and t distributions 
 Author: Fortran code by Alan Genz, R code by Adelchi Azzalini 
 Maintainer: Adelchi Azzalini <azzalini@stat.unipd.it>
@@ -13,4 +13,4 @@ Description: This package provides functions for computing the density and
   non-Monte Carlo method.
 License: GPL Version 2 for the R code; for the Fortran code by Alan Genz, see see http://www.wsu.edu/policies.html
 URL: http://azzalini.stat.unipd.it/SN/Pkg-mnormt
-Packaged: Wed Apr 26 09:38:29 2006; aa
+Packaged: Mon Oct  9 12:14:37 2006; aa
