@@ -1207,6 +1207,7 @@
          END DO
       ENDIF
       END
+*--------
       SUBROUTINE TRESTR(POINTR, SBRGNS, PONTRS, RGNERS)
 ****BEGIN PROLOGUE TRESTR
 ****PURPOSE TRESTR maintains a heap for subregions.
@@ -1241,13 +1242,13 @@
 *   SUBRGN Position of child/parent subregion in the heap.
 *   SUBTMP Position of parent/child subregion in the heap.
 *
-      INTEGER SUBRGN, SUBTMP
+      INTEGER SUBRGN, SUBTMP, POINTP, POINTS
       DOUBLE PRECISION RGNERR
 *
 ****FIRST PROCESSING STATEMENT TRESTR
 *     
       RGNERR = RGNERS(POINTR)
-      IF ( POINTR .EQ. PONTRS(1)) THEN
+      IF ( POINTR .EQ. PONTRS(1) ) THEN
 *
 *        Move the new subregion inserted at the top of the heap 
 *        to its correct position in the heap.
@@ -1259,14 +1260,17 @@
 *     
 *              Find maximum of left and right child.
 *
-               IF ( RGNERS(PONTRS(SUBTMP)) .LT. 
-     +              RGNERS(PONTRS(SUBTMP+1)) ) SUBTMP = SUBTMP + 1
+               POINTS = PONTRS(SUBTMP)
+               POINTP = PONTRS(SUBTMP+1)
+               IF ( RGNERS(POINTS) .LT. 
+     +              RGNERS(POINTP) ) SUBTMP = SUBTMP + 1
             ENDIF
 *
 *           Compare maximum child with parent.
 *           If parent is maximum, then done.
 *
-            IF ( RGNERR .LT. RGNERS(PONTRS(SUBTMP)) ) THEN
+            POINTS = PONTRS(SUBTMP)
+            IF ( RGNERR .LT. RGNERS(POINTS) ) THEN
 *     
 *              Move the pointer at position subtmp up the heap.
 *     
@@ -1285,7 +1289,8 @@
 *
 *           Compare child with parent. If parent is maximum, then done.
 *     
-            IF ( RGNERR .GT. RGNERS(PONTRS(SUBTMP)) ) THEN
+            POINTS = PONTRS(SUBTMP)
+            IF ( RGNERR .GT. RGNERS(POINTS) ) THEN
 *     
 *              Move the pointer at position subtmp down the heap.
 *
