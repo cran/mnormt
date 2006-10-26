@@ -4,4 +4,5 @@ R package 'mnormt' history file
 2006-01-23: 1.0-0 first version uploaded on CRAN
 2006-04-26: 1.0-1 fixed a bug of non-compliance to R programming standards
 2006-10-09: 1.1-0 adopt amedend Fortran code of Alan Genz (subtroutine TRESTR)
-       
+2006-10-26: 1.2-0 fixed a bug in function rmt
+
