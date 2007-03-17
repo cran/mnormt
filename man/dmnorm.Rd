@@ -21,7 +21,7 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000 * d, abseps = 1e-06, releps = 0
            giving the coordinates of the point(s) where the density must
            be evaluated;
           for \code{pmnorm}, only a vector of length \code{d} is allowed,
-          and \code{d} cannot exceed 100}
+          and \code{d} cannot exceed 20}
   \item{mean}{a numeric vector representing the expected value of the 
            distribution; it must be of length \code{d}, as defined above}
   \item{varcov}{a positive definite matrix representing the 
@@ -35,10 +35,10 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000 * d, abseps = 1e-06, releps = 0
           among \code{maxpts}, \code{absrel}, \code{releps} }
   \item{n}{the number of random  numbers to be generated}
   \item{lower}{a numeric vector of lower integration limits of 
-        the density function; must be of maximal length 100; 
+        the density function; must be of maximal length 20; 
         \code{+Inf} and \code{-Inf} entries are allowed }
   \item{upper}{ a numeric vector of upper integration limits 
-          of the density function; must be of maximal length 100; 
+          of the density function; must be of maximal length 20; 
           \code{+Inf} and \code{-Inf} entries are allowed }
   \item{maxpts}{the maximum number of function evaluations 
                (default value: \code{2000*d})}
