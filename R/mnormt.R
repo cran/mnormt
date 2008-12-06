@@ -1,7 +1,5 @@
-
-# if(.Platform$OS.type=="unix") dyn.load("mnormt/src/sadmvnt.so")
-# if(.Platform$OS.type=="windows") dyn.load("mnormt/src/sadmvnt.dll")
-
+# R code of package 'mnormt', version 1.3-0 (2008-12-06). 
+# Author: Adelchi Azzalini (University of Padua, Italy) 
 
 dmnorm <- function(x, mean=rep(0,d), varcov, log=FALSE)
 {
@@ -26,7 +24,9 @@ rmnorm <- function(n=1, mean=rep(0,d), varcov)
 
 
 pmnorm <- function(x, mean=rep(0,length(x)), varcov, ...)
-   sadmvn(lower=rep(-Inf, length(x)), upper=x, mean, varcov, ...)
+  if(length(x) == 2) 
+    biv.nt.prob(0, lower=rep(-Inf, 2), upper=x, mean, varcov)  else  
+    sadmvn(lower=rep(-Inf, length(x)), upper=x, mean, varcov, ...) 
  
 
 sadmvn <- function(lower, upper, mean, varcov,  
@@ -37,9 +37,10 @@ sadmvn <- function(lower, upper, mean, varcov,
   d <- as.integer(if(is.matrix(varcov)) ncol(varcov) else 1)
   varcov <- matrix(varcov, d, d)
   sd  <- sqrt(diag(varcov))
-  rho <- diag(1/sd,d,d) %*% varcov %*% diag(1/sd,d,d)
+  rho <- cov2cor(varcov)
   lower <- as.double((lower-mean)/sd)
   upper <- as.double((upper-mean)/sd)
+  if(d == 1) return(pnorm(upper)-pnorm(lower))
   infin <- rep(2,d)
   infin <- replace(infin, (upper == Inf) & (lower > -Inf), 1)
   infin <- replace(infin, (upper < Inf) & (lower == -Inf), 0)
@@ -89,8 +90,13 @@ rmt <- function(n=1, mean=rep(0,d), S, df=Inf)
 }
 
 
-pmt <- function(x, mean=rep(0,length(x)), S, df=Inf, ...)
-   sadmvt(df, lower=rep(-Inf, length(x)), upper=x, mean, S, ...)
+pmt <- function(x, mean=rep(0,length(x)), S, df=Inf, ...){
+  if(df == Inf) df<- 0
+  if(length(x) == 2) 
+    biv.nt.prob(df, lower=rep(-Inf, 2), upper=x, mean, S) else  
+    sadmvt(df, lower=rep(-Inf, length(x)), upper=x, mean, S, ...)  
+  }
+   
 
 
 sadmvt <- function(df, lower, upper, mean, S, 
@@ -104,9 +110,10 @@ sadmvt <- function(df, lower, upper, mean, S,
   d  <- as.integer(if(is.matrix(S)) ncol(S) else 1)
   S  <- matrix(S, d, d)
   sd  <- sqrt(diag(S))
-  rho <- diag(1/sd,d,d) %*% S %*% diag(1/sd,d,d)
+  rho <- cov2cor(S)
   lower <- as.double((lower-mean)/sd)
   upper <- as.double((upper-mean)/sd)
+  if(d == 1) return(pt(upper, df) - pt(lower, df))
   infin <- rep(2,d)
   infin <- replace(infin, (upper == Inf) & (lower > -Inf), 1)
   infin <- replace(infin, (upper < Inf) & (lower == -Inf), 0)
@@ -130,6 +137,32 @@ sadmvt <- function(df, lower, upper, mean, S,
   return(prob)
 }
 
+
+biv.nt.prob <- function(df, lower, upper, mean, S){
+  if(any(dim(S) != c(2,2))) stop("dimensions mismatch")
+  if(length(mean) != 2) stop("dimensions mismatch") 
+  if(round(df) != df) warning("non integer df is rounded to integer") 
+  nu <- if(df<Inf) as.integer(round(df)) else 0
+  if(df==Inf) nu <- 0
+  sd <- sqrt(diag(S))
+  rho <- cov2cor(S)[1,2]
+  lower <- as.double((lower-mean)/sd)
+  upper <- as.double((upper-mean)/sd)
+  if(any(lower > upper)) stop("lower>upper integration limits")
+  if(any(lower == upper)) return(0)
+  infin <- c(2,2)
+  infin <- replace(infin, (upper == Inf) & (lower > -Inf), 1)
+  infin <- replace(infin, (upper < Inf) & (lower == -Inf), 0)
+  infin <- replace(infin, (upper == Inf) & (lower == -Inf), -1)
+  infin <- as.integer(infin)
+  lower <- replace(lower, lower == -Inf, 0)
+  upper <- replace(upper, upper == Inf, 0)
+  rho   <- as.double(rho)
+  prob  <- as.double(0)
+  a <- .Fortran("smvbvt", prob, nu, lower, upper, infin, rho, PACKAGE="mnormt")
+  return(a[[1]])
+  } 
+  
 .First.lib <- function(library, pkg)
 { 
    Rv <- R.Version()

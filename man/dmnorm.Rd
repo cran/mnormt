@@ -32,7 +32,7 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000 * d, abseps = 1e-06, releps = 0
         the logarithm of the density is computed
             }
   \item{...}{parameters passed to \code{sadmvn}, 
-          among \code{maxpts}, \code{absrel}, \code{releps} }
+          among \code{maxpts}, \code{abseps}, \code{releps} }
   \item{n}{the number of random  numbers to be generated}
   \item{lower}{a numeric vector of lower integration limits of 
         the density function; must be of maximal length 20; 
@@ -46,11 +46,13 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000 * d, abseps = 1e-06, releps = 0
   \item{releps}{relative error tolerance (default value: \code{0})}
 }
 \details{
+  The function \code{pmnorm} works by making a suitable call to
+  \code{sadmvn} if \code{d>2}, or to \code{biv.nt.prob} if \code{d=2}.
   Function \code{sadmvn} is an interface to a Fortran-77 routine with 
   the same name written  by Alan Genz, and available from his web page; 
   this makes uses of some auxiliary  functions whose authors are 
   documented in the Fortran code. The routine uses an adaptive 
-  integration method.
+  integration method. 
 }
 \value{
   \code{dmnorm} returns a vector of density values (possibly log-transformed);
@@ -81,7 +83,7 @@ had a normal termination, achieving the required accuracy. If
 this is not the case, re-run the function with an higher value of
 \code{maxpts}
 }
-\seealso{  \code{\link{dnorm}}, \code{\link{dmt}}}
+\seealso{  \code{\link{dnorm}}, \code{\link{dmt}}, \code{\link{biv.nt.prob}}}
 \examples{
 x <- seq(-2,4,length=21)
 y <- 2*x+10
@@ -94,8 +96,13 @@ p2 <- pmnorm(c(2,11,3), mu, Sigma, maxpts=10000, abseps=1e-10)
 x <- rmnorm(10, mu, Sigma)
 p <- sadmvn(lower=c(2,11,3), upper=rep(Inf,3), mu, Sigma) # upper tail
 #
-p1 <- pnorm(0, 1, 2)
-p2 <- pmnorm(0, 1, 2^2)
+p0 <- pmnorm(c(2,11), mu[1:2], Sigma[1:2,1:2])
+p1 <- biv.nt.prob(0, lower=rep(-Inf,2), upper=c(2, 11), mu[1:2], Sigma[1:2,1:2])
+p2 <- sadmvn(lower=rep(-Inf,2), upper=c(2, 11), mu[1:2], Sigma[1:2,1:2]) 
+c(p0, p1, p2, p0-p1, p0-p2)
+#
+p1 <- pnorm(0, 1, 3)
+p2 <- pmnorm(0, 1, 3^2)
 }
 \keyword{distribution}
 \keyword{multivariate}
