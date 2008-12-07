@@ -3,6 +3,7 @@
 \alias{pmt}
 \alias{rmt}
 \alias{sadmvt}
+\alias{biv.nt.prob}
 \title{Multivariate t distribution}
 \description{
   The probability density function, the distribution function and random
@@ -14,6 +15,7 @@ dmt(x, mean = rep(0, d), S, df=Inf, log = FALSE)
 pmt(x, mean = rep(0, length(x)), S, df=Inf, ...) 
 rmt(n = 1, mean = rep(0, d), S, df=Inf) 
 sadmvt(df, lower, upper, mean, S, maxpts = 2000 * d, abseps = 1e-06, releps = 0) 
+biv.nt.prob(df, lower, upper, mean, S)
 }
 \arguments{
   \item{x}{ for \code{dmt}, this is either a vector of length \code{d} 
@@ -29,10 +31,14 @@ sadmvt(df, lower, upper, mean, S, maxpts = 2000 * d, abseps = 1e-06, releps = 0)
         the variance-covariance matrix  when \code{df>2}; 
         a vector of length 1 is also allowed 
        (in this case, \code{d=1} is set)}
-     \item{df}{degrees of freedom; it must be a positive integer for
-       \code{pmt} and \code{sadmvt}, otherwise a positive number; if
-       \code{df=Inf} (default value), the corresponding \code{*mnorm}
-       function is called} 
+  \item{df}{degrees of freedom; it must be a positive integer for
+       \code{pmt}, \code{sadmvt} and \code{biv.nt.prob}, 
+        otherwise a positive number. 
+        If \code{df=Inf} (default value), the corresponding \code{*mnorm}
+       function is called, unless \code{d=2}; in this case
+       \code{biv.nt.prob} is used, If  \code{biv.nt.prob} is called with
+       \code{df=Inf}, it returns the probability of a rectangle assigned by
+       a bivariate normal distribution} 
   \item{log}{a logical value; if \code{TRUE}, 
         the logarithm of the density is computed
         }    
@@ -51,11 +57,17 @@ sadmvt(df, lower, upper, mean, S, maxpts = 2000 * d, abseps = 1e-06, releps = 0)
   \item{releps}{relative error tolerance (default value: \code{0})}
 }
 \details{
-  Function \code{sadmvt} is an interface to a Fortran-77 routine with 
-  the same name written  by Alan Genz, and available from his web page; 
-  this makes uses of some auxiliary  functions whose authors are 
-  documented in the Fortran code. The routine uses an adaptive 
-  integration method.
+  If \code{d>2}, \code{pmt} is computed by a suitable call to 
+  \code{sadmvt}; if \code{d=2}, a call to \code{biv.nt.prob} is used;
+  if \code{d=1}, then \code{pt} is used.
+  The functions \code{sadmvt} and \code{biv.nt.prob} are interfaces to 
+  Fortran-77  routines by Alan Genz, and available from his web page; 
+  they makes uses of some auxiliary  functions whose authors are 
+  documented in the Fortran code. The routine \code{sadmvt} uses an adaptive 
+  integration method. The routine \code{biv.nt.prob} is specific for the
+  bivariate case; if \code{df<1} or \code{df=Inf}, it computes the bivariate 
+  normal distribution function using a non-iterative method described in a
+  reference given below.
 }
 \value{
   \code{dmt} returns a vector of density values (possibly log-transformed);
@@ -64,8 +76,12 @@ sadmvt(df, lower, upper, mean, S, maxpts = 2000 * d, abseps = 1e-06, releps = 0)
    \code{rmt} returns a matrix of \code{n} rows of random vectors
    }
 \references{
-  Genz, A.:   Fortran code available at
-  \url{http://www.math.wsu.edu/math/faculty/genz/software/mvt.f}
+  Genz, A.:  Fortran code in files \code{mvt.f} and \code{mvtdstpack.f} 
+  available at \url{http://www.math.wsu.edu/math/faculty/genz/software/} 
+  
+  Dunnett, C.W. and Sobel, M. (1954).
+  A bivariate generalization of Student's \emph{t}-distribution with tables  
+  for certain special cases. \emph{Biometrika} 41, 153--169.
 }
 \author{
   Fortran code of \code{SADMVT} and most auxiliary functions by Alan Genz,
@@ -91,6 +107,12 @@ p1 <- pmt(c(2,11,3), mu, Sigma, df)
 p2 <- pmt(c(2,11,3), mu, Sigma, df, maxpts=10000, abseps=1e-8)
 x  <- rmt(10, mu, Sigma, df)
 p  <- sadmvt(df, lower=c(2,11,3), upper=rep(Inf,3), mu, Sigma) # upper tail
+#
+p0 <- pmt(c(2,11), mu[1:2], Sigma[1:2,1:2], df=5)
+p1 <- biv.nt.prob(5, lower=rep(-Inf,2), upper=c(2, 11), mu[1:2], Sigma[1:2,1:2])
+p2 <- sadmvt(5, lower=rep(-Inf,2), upper=c(2, 11), mu[1:2], Sigma[1:2,1:2]) 
+c(p0, p1, p2, p0-p1, p0-p2)
+
 }
 \keyword{distribution}
 \keyword{multivariate}
