@@ -7,3 +7,4 @@ R package 'mnormt' history file
 2006-10-26: 1.2-0 fixed a bug in function rmt
 2007-03-16: 1.2-1 some amendments in documentation
 2008-06-12: 1.3-0 added Fortran code for the bivariate case; improved R coding
+2009-01-26: 1.3-2 minor modification to F77 code to avoid GOTO outside IF block 

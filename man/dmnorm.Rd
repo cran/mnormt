@@ -47,7 +47,8 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000 * d, abseps = 1e-06, releps = 0
 }
 \details{
   The function \code{pmnorm} works by making a suitable call to
-  \code{sadmvn} if \code{d>2}, or to \code{biv.nt.prob} if \code{d=2}.
+  \code{sadmvn} if \code{d>2}, or to \code{biv.nt.prob} if \code{d=2}, 
+  or to \code{pnorm} if \code{d=1}.
   Function \code{sadmvn} is an interface to a Fortran-77 routine with 
   the same name written  by Alan Genz, and available from his web page; 
   this makes uses of some auxiliary  functions whose authors are 
@@ -70,7 +71,7 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000 * d, abseps = 1e-06, releps = 0
   \emph{Computing Science and Statistics}, \bold{25}, 400-405.
   
   Genz, A.:  Fortran code available at
-  \url{http://www.math.wsu.edu/math/faculty/genz/software/mvn.f}
+  \url{http://www.math.wsu.edu/math/faculty/genz/software/fort77/mvn.f}
 }
 \author{
   Fortran code of \code{SADMVN} and most auxiliary functions by Alan Genz,
@@ -83,7 +84,7 @@ had a normal termination, achieving the required accuracy. If
 this is not the case, re-run the function with an higher value of
 \code{maxpts}
 }
-\seealso{  \code{\link{dnorm}}, \code{\link{dmt}}, \code{\link{biv.nt.prob}}}
+\seealso{\code{\link{dnorm}}, \code{\link{dmt}}, \code{\link{biv.nt.prob}}}
 \examples{
 x <- seq(-2,4,length=21)
 y <- 2*x+10
