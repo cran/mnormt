@@ -57,9 +57,6 @@ biv.nt.prob(df, lower, upper, mean, S)
   \item{releps}{relative error tolerance (default value: \code{0})}
 }
 \details{
-  If \code{d>2}, \code{pmt} is computed by a suitable call to 
-  \code{sadmvt}; if \code{d=2}, a call to \code{biv.nt.prob} is used;
-  if \code{d=1}, then \code{pt} is used.
   The functions \code{sadmvt} and \code{biv.nt.prob} are interfaces to 
   Fortran-77  routines by Alan Genz, and available from his web page; 
   they makes uses of some auxiliary  functions whose authors are 
@@ -68,6 +65,9 @@ biv.nt.prob(df, lower, upper, mean, S)
   bivariate case; if \code{df<1} or \code{df=Inf}, it computes the bivariate 
   normal distribution function using a non-iterative method described in a
   reference given below.
+  If \code{pmt} is called  with \code{d>2}, this is converted into
+  a suitable call to \code{sadmvt}; if \code{d=2}, a call to 
+  \code{biv.nt.prob} is used; if \code{d=1}, then \code{pt} is used.
 }
 \value{
   \code{dmt} returns a vector of density values (possibly log-transformed);

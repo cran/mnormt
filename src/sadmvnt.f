@@ -1,6 +1,7 @@
-* Selected portion of code taken from:
+* Selected portions of code taken from:
 *    http://www.math.wsu.edu/math/faculty/genz/software/mvn.f
 *    http://www.math.wsu.edu/math/faculty/genz/software/mvt.f
+* with a few minor modifications (search for 'AA' to find them)
 *
 * Author:
 *          Alan Genz
@@ -919,7 +920,7 @@
 *
 *     Subroutine to sort integration limits.
 *
-      INTEGER N, INFI(*), INFIN(*), INFIS
+      INTEGER N, INFI(*), INFIN(*), INFIS, iflag
       DOUBLE PRECISION 
      &     A(*), B(*), COV(*), LOWER(*), UPPER(*), CORREL(*), Y(*), D, E
       INTEGER I, J, K, IJ, II, JMIN
@@ -951,14 +952,16 @@
       END DO
 *
 *     First move any doubly infinite limits to innermost positions
+*     [AA, recoded to avoid GOTO jump outside IF block]
 *
       IF ( INFIS .LT. N ) THEN
          DO I = N,N-INFIS+1,-1
+            iflag = 0
             IF ( INFI(I) .GE. 0 ) THEN 
                DO J = 1,I-1
-                  IF ( INFI(J) .LT. 0 ) THEN
+                  IF ( INFI(J) .LT. 0 .and. iflag .eq. 0) THEN
                      CALL RCSWAP(J, I, A, B, INFI, N, COV)
-                     GO TO 10
+                     iflag = 1
                   ENDIF
                END DO
             ENDIF
@@ -1512,7 +1515,7 @@
       INTEGER N, NU, INFI(*), INFIN(*), INFIS
       DOUBLE PRECISION 
      &     A(*), B(*), COV(*), LOWER(*), UPPER(*), CORREL(*), Y(*), D, E
-      INTEGER I, J, K, IJ, II, JMIN
+      INTEGER I, J, K, IJ, II, JMIN, iflag
       DOUBLE PRECISION SUMSQ, ZERO, TWO, PI, CVDIAG
       DOUBLE PRECISION AI, BI, SUM, YL, YU, YD
       DOUBLE PRECISION AMIN, BMIN, DMIN, EMIN, CON, CONODD, CONEVN
@@ -1549,14 +1552,16 @@
       END DO
 *
 *     First move any doubly infinite limits to innermost positions
+*     [AA, recoded to avoid GOTO jump outside IF block]
 *
       IF ( INFIS .LT. N ) THEN
          DO I = N, N-INFIS+1, -1
+            iflag = 0
             IF ( INFI(I) .GE. 0 ) THEN
                DO J = 1, I-1
-                  IF ( INFI(J) .LT. 0 ) THEN
+                  IF ( INFI(J) .LT. 0 .and. iflag .eq. 0) THEN
                      CALL RCSWAP( J, I, A, B, INFI, N, COV )
-                     GOTO 10
+                     iflag = 1
                   ENDIF
                END DO
             ENDIF
