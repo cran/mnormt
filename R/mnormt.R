@@ -166,8 +166,6 @@ biv.nt.prob <- function(df, lower, upper, mean, S){
 .First.lib <- function(library, pkg)
 { 
    Rv <- R.Version()
-   if(Rv$major < 2 |(Rv$major == 2 && Rv$minor < 2.0))
-        stop("This package requires R 2.2.0 or later")
    library.dynam("mnormt", pkg, library)
    invisible()
 }
