@@ -1,4 +1,4 @@
-# R code of package 'mnormt', version 1.3-0 (2008-12-06). 
+# R code of package 'mnormt', version 1.3-4 (2010-11-25). 
 # Author: Adelchi Azzalini (University of Padua, Italy) 
 
 dmnorm <- function(x, mean=rep(0,d), varcov, log=FALSE)
@@ -91,7 +91,6 @@ rmt <- function(n=1, mean=rep(0,d), S, df=Inf)
 
 
 pmt <- function(x, mean=rep(0,length(x)), S, df=Inf, ...){
-  if(df == Inf) df<- 0
   if(length(x) == 2) 
     biv.nt.prob(df, lower=rep(-Inf, 2), upper=x, mean, S) else  
     sadmvt(df, lower=rep(-Inf, length(x)), upper=x, mean, S, ...)  
