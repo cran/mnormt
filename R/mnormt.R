@@ -1,14 +1,15 @@
-# R code of package 'mnormt', version 1.3-4 (2010-11-25). 
+# R code of package 'mnormt', version 1.4-0 (2011-01-16). 
 # Author: Adelchi Azzalini (University of Padua, Italy) 
 
 dmnorm <- function(x, mean=rep(0,d), varcov, log=FALSE)
 {
   d  <- if(is.matrix(varcov)) ncol(varcov) else 1
-  if(d>1 & is.vector(x)) x <- matrix(x, 1, d)
-  n  <- if(d==1)  length(x) else nrow(x) 
-  X  <- t(matrix(x, nrow=n, ncol=d)) - mean
-  Q  <- apply((solve(varcov)%*% X)* X, 2, sum) 
-  logDet <- sum(logb(abs(diag(qr(varcov)[[1]]))))
+  x <- if(is.vector(x)) matrix(x, 1, d) else data.matrix(x)
+  if(is.vector(mean)) mean <- outer(rep(1, nrow(x)), mean)
+  X  <- t(x - mean)
+  conc <- pd.solve(varcov)
+  Q  <- apply((conc %*% X)* X, 2, sum) 
+  logDet <- attr(conc, "log.det")
   logPDF <- as.vector(Q + d*logb(2*pi)+logDet)/(-2)
   if(log) logPDF else exp(logPDF)
 }
@@ -70,11 +71,12 @@ dmt <- function (x, mean=rep(0,d), S, df = Inf, log = FALSE)
 {
   if (df == Inf)  return(dmnorm(x, mean, S, log = log))
   d  <- if(is.matrix(S)) ncol(S) else 1
-  if(d>1 & is.vector(x)) x <- matrix(x, 1, d)
-  n  <- if(d==1) length(x) else nrow(x) 
-  X <- t(matrix(x, nrow = n, ncol = d)) - mean
-  Q <- apply((solve(S) %*% X) * X, 2, sum)
-  logDet <- sum(logb(abs(diag(qr(S)$qr))))
+  x <- if(is.vector(x)) matrix(x, 1, d) else data.matrix(x)
+  if(is.vector(mean)) mean <- outer(rep(1, nrow(x)), mean)
+  X  <- t(x - mean)
+  S.inv <- pd.solve(S)
+  Q <- apply((S.inv %*% X) * X, 2, sum)
+  logDet <- attr(S.inv, "log.det")
   logPDF <- (lgamma((df + d)/2) - 0.5 * (d * logb(pi * df) + logDet)
              - lgamma(df/2) - 0.5 * (df + d) * logb(1 + Q/df))
   if(log) logPDF else exp(logPDF)
@@ -161,7 +163,27 @@ biv.nt.prob <- function(df, lower, upper, mean, S){
   a <- .Fortran("smvbvt", prob, nu, lower, upper, infin, rho, PACKAGE="mnormt")
   return(a[[1]])
   } 
-  
+ 
+pd.solve <- function(x, silent=FALSE)
+{
+  if(is.null(x)) return(NULL)
+  if(any(is.na(x)))
+    { if(silent) return (NULL) else stop("NA's in x") } 
+  if(!is.matrix(x)) 
+    {if(silent) return(NULL) else stop("x is not a matrix")}
+  if(max(abs(x - t(x))) > .Machine$double.eps) 
+    {if(silent) return (NULL) else stop("x appears to be not symmetric") } 
+  x <- (x + t(x))/2
+  u <- try(chol(x, pivot = FALSE), silent = silent)
+  if(class(u) == "try-error") {
+     if(silent) return(NULL) else
+       stop("x appears to be not positive definite") }
+  inv <- chol2inv(u)
+  inv <- (inv + t(inv))/2
+  attr(inv, "log.det") <- 2 * sum(log(diag(u)))
+  return(inv)
+}
+
 .First.lib <- function(library, pkg)
 { 
    Rv <- R.Version()
