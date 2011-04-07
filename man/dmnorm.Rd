@@ -23,14 +23,15 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000 * d, abseps = 1e-06, releps = 0
           for \code{pmnorm}, only a vector of length \code{d} is allowed,
           and \code{d} cannot exceed 20}
   \item{mean}{a numeric vector representing the expected value of the 
-           distribution; it must be of length \code{d}, as defined above}
+           distribution; it must be of length \code{d}, as defined above.
+           For \code{dmnorm} it can be a matrix; in this case its dimensions
+           must match those of \code{x}}
   \item{varcov}{a positive definite matrix representing the 
         variance-covariance  matrix of the distribution; 
         a vector of length 1 is also allowed 
        (in this case, \code{d=1} is set)} 
-  \item{log}{a logical value; if \code{TRUE}, 
-        the logarithm of the density is computed
-            }
+  \item{log}{a logical value (default value is \code{FALSE}); 
+        if \code{TRUE}, the logarithm of the density is computed}
   \item{...}{parameters passed to \code{sadmvn}, 
           among \code{maxpts}, \code{abseps}, \code{releps} }
   \item{n}{the number of random  numbers to be generated}

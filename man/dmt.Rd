@@ -25,7 +25,9 @@ biv.nt.prob(df, lower, upper, mean, S)
     and \code{d} cannot exceed 20}
   \item{mean}{a numeric vector representing the location parameter
          of the distribution (equal to the expected value when \code{df>1});
-           it must be of length \code{d}, as defined above}
+         it must be of length \code{d}, as defined above. 
+          For \code{dmt} it can be a matrix; in this case its dimensions
+           must match those of \code{x}}
   \item{S}{a positive definite matrix representing the 
         scale matrix of the distribution, such that \code{S*df/(df-2)} is
         the variance-covariance matrix  when \code{df>2}; 

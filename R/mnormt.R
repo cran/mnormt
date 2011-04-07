@@ -1,16 +1,20 @@
-# R code of package 'mnormt', version 1.4-0 (2011-01-16). 
+# R code of package 'mnormt', version 1.4-1 (2011-03-21). 
 # Author: Adelchi Azzalini (University of Padua, Italy) 
 
 dmnorm <- function(x, mean=rep(0,d), varcov, log=FALSE)
 {
-  d  <- if(is.matrix(varcov)) ncol(varcov) else 1
-  x <- if(is.vector(x)) matrix(x, 1, d) else data.matrix(x)
+  d <- if(is.matrix(varcov)) ncol(varcov) else 1
+  if(d==1) return(dnorm(x, mean, sqrt(varcov), log=log))
+  x <- if (is.vector(x)) matrix(x, 1, d) else data.matrix(x)
+  if (is.vector(mean)) mean <- outer(rep(1, nrow(x)), mean)
+  if (is.matrix(mean) && (nrow(mean) != nrow(x) || ncol(mean) != ncol(x)))
+     stop("mismatch of dimensions of 'x' and 'mean'")
   if(is.vector(mean)) mean <- outer(rep(1, nrow(x)), mean)
   X  <- t(x - mean)
-  conc <- pd.solve(varcov)
+  conc <- pd.solve(varcov, log.det=TRUE)
   Q  <- apply((conc %*% X)* X, 2, sum) 
-  logDet <- attr(conc, "log.det")
-  logPDF <- as.vector(Q + d*logb(2*pi)+logDet)/(-2)
+  log.det <- attr(conc, "log.det")
+  logPDF <- as.vector(Q + d*logb(2*pi)+log.det)/(-2)
   if(log) logPDF else exp(logPDF)
 }
 
@@ -70,11 +74,19 @@ sadmvn <- function(lower, upper, mean, varcov,
 dmt <- function (x, mean=rep(0,d), S, df = Inf, log = FALSE) 
 {
   if (df == Inf)  return(dmnorm(x, mean, S, log = log))
-  d  <- if(is.matrix(S)) ncol(S) else 1
-  x <- if(is.vector(x)) matrix(x, 1, d) else data.matrix(x)
+  d <- if(is.matrix(S)) ncol(S) else 1
+  if (d==1) {
+    y <- dt((x-mean)/sqrt(S), df=df, log=log)
+    if(log) y <- y-0.5*logb(S) else y<- y/sqrt(S)
+    return(y)
+    }
+  x <- if (is.vector(x)) matrix(x, 1, d) else data.matrix(x)
+  if (is.vector(mean)) mean <- outer(rep(1, nrow(x)), mean)
+  if (is.matrix(mean) && (nrow(mean) != nrow(x) || ncol(mean) != ncol(x)))
+     stop("mismatch of dimensions of 'x' and 'mean'")
   if(is.vector(mean)) mean <- outer(rep(1, nrow(x)), mean)
   X  <- t(x - mean)
-  S.inv <- pd.solve(S)
+  S.inv <- pd.solve(S, log.det=TRUE)
   Q <- apply((S.inv %*% X) * X, 2, sum)
   logDet <- attr(S.inv, "log.det")
   logPDF <- (lgamma((df + d)/2) - 0.5 * (d * logb(pi * df) + logDet)
@@ -85,7 +97,7 @@ dmt <- function (x, mean=rep(0,d), S, df = Inf, log = FALSE)
 rmt <- function(n=1, mean=rep(0,d), S, df=Inf)
 { 
   d <- if(is.matrix(S)) ncol(S) else 1 
-  if(df==Inf) x <-1 else x <- rchisq(n,df)/df
+  x <- if(df==Inf) 1 else rchisq(n,df)/df
   z <- rmnorm(n, rep(0,d), S)
   y <- t(mean + t(z/sqrt(x)))
   return(y)
@@ -164,11 +176,12 @@ biv.nt.prob <- function(df, lower, upper, mean, S){
   return(a[[1]])
   } 
  
-pd.solve <- function(x, silent=FALSE)
+pd.solve <- function(x, silent=FALSE, log.det=FALSE)
 {
   if(is.null(x)) return(NULL)
   if(any(is.na(x)))
     { if(silent) return (NULL) else stop("NA's in x") } 
+  if(length(x) == 1) x <- as.matrix(x)
   if(!is.matrix(x)) 
     {if(silent) return(NULL) else stop("x is not a matrix")}
   if(max(abs(x - t(x))) > .Machine$double.eps) 
@@ -179,8 +192,7 @@ pd.solve <- function(x, silent=FALSE)
      if(silent) return(NULL) else
        stop("x appears to be not positive definite") }
   inv <- chol2inv(u)
-  inv <- (inv + t(inv))/2
-  attr(inv, "log.det") <- 2 * sum(log(diag(u)))
+  if(log.det) attr(inv, "log.det") <- 2 * sum(log(diag(u)))
   return(inv)
 }
 

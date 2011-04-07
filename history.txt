@@ -11,3 +11,5 @@ R package 'mnormt' history file
 2009-03-21: 1.3-3 romoved check on the R version, at request of the R Core team
 2009-11-25: 1.3-4 fixed a bug affecting the case d>2 & df=Inf
 2011-01-16: 1.4-0 pd.solve() introduced; argument 'mean' can now be a matrix
+2011-04-04: 1.4-1 fixed documentation, coding of dmnorm & dmt is straightened,
+                  log.det in pd.solve() provided only on request   

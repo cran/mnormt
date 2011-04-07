@@ -1,2 +1,3 @@
 dmnorm                  Multivariate normal distribution
 dmt                     Multivariate t distribution
+pd.solve                inverse of symmetric positive definite matrix 
