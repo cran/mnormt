@@ -168,6 +168,11 @@ biv.nt.prob <- function(df, lower, upper, mean, S){
   infin <- replace(infin, (upper < Inf) & (lower == -Inf), 0)
   infin <- replace(infin, (upper == Inf) & (lower == -Inf), -1)
   infin <- as.integer(infin)
+  if(any(infin == -1)) {
+    if(all(infin == -1)) return(1)
+    k <- which(infin != -1)
+    return(pnorm(upper[k]))
+    }
   lower <- replace(lower, lower == -Inf, 0)
   upper <- replace(upper, upper == Inf, 0)
   rho   <- as.double(rho)
