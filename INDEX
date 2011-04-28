@@ -1,3 +1,6 @@
-dmnorm                  Multivariate normal distribution
-dmt                     Multivariate t distribution
-pd.solve                inverse of symmetric positive definite matrix 
+biv.nit.prob            bivariate normal and "t" probabilities
+dmnorm                  multivariate normal distribution
+dmt                     multivariate "t" distribution
+pd.solve                inverse of a symmetric positive definite matrix 
+sadmvn                  rectangle probabilities of multivariate normal 
+sadmvt                  rectangle probabilities of multivariate "t"

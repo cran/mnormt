@@ -38,7 +38,7 @@ biv.nt.prob(df, lower, upper, mean, S)
         otherwise a positive number. 
         If \code{df=Inf} (default value), the corresponding \code{*mnorm}
        function is called, unless \code{d=2}; in this case
-       \code{biv.nt.prob} is used, If  \code{biv.nt.prob} is called with
+       \code{biv.nt.prob} is used. If  \code{biv.nt.prob} is called with
        \code{df=Inf}, it returns the probability of a rectangle assigned by
        a bivariate normal distribution} 
   \item{log}{a logical value; if \code{TRUE}, 
