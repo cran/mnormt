@@ -51,6 +51,17 @@ sadmvn <- function(lower, upper, mean, varcov,
   infin <- replace(infin, (upper < Inf) & (lower == -Inf), 0)
   infin <- replace(infin, (upper == Inf) & (lower == -Inf), -1)
   infin <- as.integer(infin)
+  if(any(infin == -1)) {
+    if(all(infin == -1)) return(1)
+    k <- which(infin != -1)
+    d <- length(k)
+    lower <- lower[k]
+    upper <- upper[k]
+    if(d == 1) return(pnorm(upper) - pnorm(lower))
+    rho <- rho[k, k]
+    infin <- infin[k]
+    if(d == 2) return(biv.nt.prob(0, lower, upper, rep(0,2), rho))
+    }
   lower <- replace(lower, lower == -Inf, 0)
   upper <- replace(upper, upper == Inf, 0)
   correl <- as.double(rho[upper.tri(rho, diag=FALSE)])
@@ -132,6 +143,17 @@ sadmvt <- function(df, lower, upper, mean, S,
   infin <- replace(infin, (upper < Inf) & (lower == -Inf), 0)
   infin <- replace(infin, (upper == Inf) & (lower == -Inf), -1)
   infin <- as.integer(infin)
+  if(any(infin == -1)) {
+    if(all(infin == -1)) return(1)
+    k <- which(infin != -1)
+    d <- length(k)
+    lower <- lower[k]
+    upper <- upper[k]
+    if(d == 1) return(pt(upper, df=df) - pt(lower, df=df))
+    rho <- rho[k, k]
+    infin <- infin[k]
+    if(d == 2) return(biv.nt.prob(df, lower, upper, rep(0,2), rho))
+    }
   lower <- replace(lower, lower == -Inf, 0)
   upper <- replace(upper, upper == Inf, 0)
   correl <- rho[upper.tri(rho, diag=FALSE)]
@@ -171,7 +193,7 @@ biv.nt.prob <- function(df, lower, upper, mean, S){
   if(any(infin == -1)) {
     if(all(infin == -1)) return(1)
     k <- which(infin != -1)
-    return(pnorm(upper[k]))
+    return(pt(upper[k], df=df) - pt(lower[k], df=df))
     }
   lower <- replace(lower, lower == -Inf, 0)
   upper <- replace(upper, upper == Inf, 0)
