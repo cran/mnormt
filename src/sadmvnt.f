@@ -1406,6 +1406,7 @@
       PARAMETER ( NL = 20 )
       PARAMETER ( LENWRK = 20*NL**2 )
       DOUBLE PRECISION WORK(LENWRK)
+      DOUBLE PRECISION FNCMVT 
       IF ( N .GT. 20 .OR. N .LT. 1 ) THEN
          INFORM = 2
          VALUE = 0
