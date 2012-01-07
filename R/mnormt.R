@@ -223,7 +223,7 @@ pd.solve <- function(x, silent=FALSE, log.det=FALSE)
   return(inv)
 }
 
-.First.lib <- function(library, pkg)
+.onLoad <- .First.lib <- function(library, pkg)
 { 
    Rv <- R.Version()
    library.dynam("mnormt", pkg, library)

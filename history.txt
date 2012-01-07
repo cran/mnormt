@@ -15,3 +15,4 @@ R package 'mnormt' history file
                   log.det in pd.solve() provided only on request   
 2011-04-28: 1.4-2 fixed bug of biv.not.prob if some (lower=-Inf & upper=Inf)
 2011-05-03: 1.4-3 fixed bug as above for sadmvn and sadmvt
+2012-01-06: 1.4-5 NAMESPACE introduced on request from R Core Team
