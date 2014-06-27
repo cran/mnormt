@@ -4,54 +4,48 @@
 \alias{rmt}
 \alias{sadmvt}
 \alias{biv.nt.prob}
-\title{Multivariate t distribution}
+\title{Multivariate \emph{t} distribution}
 \description{
   The probability density function, the distribution function and random
-  number generation for the multivariate t  probability
-  distribution
+  number generation for the multivariate  Student's \emph{t}  distribution
 }
 \usage{
 dmt(x, mean = rep(0, d), S, df=Inf, log = FALSE) 
-pmt(x, mean = rep(0, length(x)), S, df=Inf, ...) 
+pmt(x, mean = rep(0, d), S, df=Inf, ...) 
 rmt(n = 1, mean = rep(0, d), S, df=Inf) 
 sadmvt(df, lower, upper, mean, S, maxpts = 2000 * d, abseps = 1e-06, releps = 0) 
 biv.nt.prob(df, lower, upper, mean, S)
 }
 \arguments{
-  \item{x}{ for \code{dmt}, this is either a vector of length \code{d} 
-    or a matrix with \code{d} columns, where \code{d=ncol(S)}, giving
-    the coordinates of the point(s) where the density must be evaluated;
-    for \code{pmt}, only a vector of length \code{d} is allowed,
-    and \code{d} cannot exceed 20}
-  \item{mean}{a numeric vector representing the location parameter
-         of the distribution (equal to the expected value when \code{df>1});
-         it must be of length \code{d}, as defined above. 
-          For \code{dmt} it can be a matrix; in this case its dimensions
-           must match those of \code{x}}
-  \item{S}{a positive definite matrix representing the 
-        scale matrix of the distribution, such that \code{S*df/(df-2)} is
-        the variance-covariance matrix  when \code{df>2}; 
-        a vector of length 1 is also allowed 
-       (in this case, \code{d=1} is set)}
-  \item{df}{degrees of freedom; it must be a positive integer for
-       \code{pmt}, \code{sadmvt} and \code{biv.nt.prob}, 
-        otherwise a positive number. 
-        If \code{df=Inf} (default value), the corresponding \code{*mnorm}
-       function is called, unless \code{d=2}; in this case
-       \code{biv.nt.prob} is used. If  \code{biv.nt.prob} is called with
-       \code{df=Inf}, it returns the probability of a rectangle assigned by
-       a bivariate normal distribution} 
+  \item{x}{ either a vector of length \code{d} 
+     or a matrix with \code{d} columns, where \code{d=ncol(S)}, giving
+     the coordinates of the point(s) where the density must be evaluated;
+     for \code{pmt},  \code{d} cannot exceed \code{20}}
+  \item{mean}{either a vector of length \code{d}, representing the location
+     parameter  (equal to the mean vector when \code{df>1}),
+     or a matrix whose rows represent different location vectors;
+     if it is a matrix, its dimensions must match those of \code{x}}
+  \item{S}{a symmetric positive-definite matrix representing the 
+     scale matrix of the distribution, such that \code{S*df/(df-2)} is
+     the variance-covariance matrix  when \code{df>2};  a vector of
+     length \code{1} is also allowed (in this case, \code{d=1} is set)}
+  \item{df}{degrees of freedom; it must be a positive integer for \code{pmt}, 
+     \code{sadmvt} and \code{biv.nt.prob}, otherwise a positive number. 
+     If \code{df=Inf} (default value), the corresponding \code{*mnorm}
+     function is called, unless \code{d=2}; in this case
+     \code{biv.nt.prob} is used. If  \code{biv.nt.prob} is called with
+     \code{df=Inf}, it returns the probability of a rectangle assigned by
+     a bivariate normal distribution} 
   \item{log}{a logical value; if \code{TRUE}, 
-        the logarithm of the density is computed
-        }    
+     the logarithm of the density is computed }    
   \item{...}{parameters passed to \code{sadmvt}, 
           among \code{maxpts}, \code{absrel}, \code{releps} }
-  \item{n}{the number of random  numbers to be generated}
+  \item{n}{the number of random  vectors to be generated}
   \item{lower}{a numeric vector of lower integration limits of 
-        the density function; must be of maximal length 20; 
+        the density function; must be of maximal length \code{20}; 
         \code{+Inf} and \code{-Inf} entries are allowed }
   \item{upper}{ a numeric vector of upper integration limits 
-          of the density function; must be of maximal length 20; 
+          of the density function; must be of maximal length \code{20}; 
           \code{+Inf} and \code{-Inf} entries are allowed }
   \item{maxpts}{the maximum number of function evaluations 
                (default value: \code{2000*d})}
@@ -74,7 +68,8 @@ biv.nt.prob(df, lower, upper, mean, S)
 \value{
   \code{dmt} returns a vector of density values (possibly log-transformed);
   \code{pmt} and \code{sadmvt} return a single probability with 
-   attributes giving details on the achieved accuracy;
+   attributes giving details on the achieved accuracy,  provided \code{x} 
+   of \code{pmnorm} is a vector;
    \code{rmt} returns a matrix of \code{n} rows of random vectors
    }
 \references{
@@ -88,7 +83,8 @@ biv.nt.prob(df, lower, upper, mean, S)
 \author{
   Fortran code of \code{SADMVT} and most auxiliary functions by Alan Genz,
   some additional auxiliary functions by people referred to within his 
-  program.  Porting to R and additional R code by Adelchi Azzalini}
+  program.  Interface to R and additional R code by Adelchi Azzalini}
+
 \note{ 
 The attributes \code{error} and \code{status} of the probability
 returned by \code{pmt} and \code{sadmvt} indicate whether the function 

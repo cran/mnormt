@@ -1,6 +1,6 @@
 \name{pd.solve}
 \alias{pd.solve}
-\title{Inverse of a positive definite matrix}
+\title{Inverse of a symmetric positive-definite matrix}
 \description{
   The inverse of a symmetric positive-definite matrix and its log-determinant
 }

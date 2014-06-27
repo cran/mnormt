@@ -6,43 +6,38 @@
 \title{Multivariate normal distribution}
 \description{
   The probability density function, the distribution function and random
-  number generation for the multivariate normal (Gaussian)  probability
-  distribution
+  number generation for the multivariate normal (Gaussian)  distribution
 }
 \usage{
 dmnorm(x, mean = rep(0, d), varcov, log = FALSE) 
-pmnorm(x, mean = rep(0, length(x)), varcov, ...) 
+pmnorm(x, mean = rep(0, d), varcov, ...) 
 rmnorm(n = 1, mean = rep(0, d), varcov) 
 sadmvn(lower, upper, mean, varcov, maxpts = 2000 * d, abseps = 1e-06, releps = 0) 
 }
 \arguments{
-  \item{x}{ for \code{dmnorm}, this is either a vector of length \code{d} or 
-           a matrix with \code{d} columns, where \code{d=ncol(varcov)},
-           giving the coordinates of the point(s) where the density must
-           be evaluated;
-          for \code{pmnorm}, only a vector of length \code{d} is allowed,
-          and \code{d} cannot exceed 20}
-  \item{mean}{a numeric vector representing the expected value of the 
-           distribution; it must be of length \code{d}, as defined above.
-           For \code{dmnorm} it can be a matrix; in this case its dimensions
-           must match those of \code{x}}
-  \item{varcov}{a positive definite matrix representing the 
-        variance-covariance  matrix of the distribution; 
-        a vector of length 1 is also allowed 
-       (in this case, \code{d=1} is set)} 
+  \item{x}{either a vector of length \code{d} or a matrix with \code{d}
+    columns, where \code{d=ncol(varcov)}, representing
+    the coordinates of the point(s) where the density must
+    be evaluated;  for \code{pmnorm},  \code{d} cannot exceed \code{20}}
+  \item{mean}{either a vector of length \code{d}, representing the mean value,
+    or a matrix whose rows represent different mean vectors;
+    if it is a matrix, its dimensions must match those of \code{x}}
+  \item{varcov}{a symmetric positive-definite matrix representing the 
+    variance-covariance  matrix of the distribution; 
+    a vector of length 1 is also allowed (in this case, \code{d=1} is set)} 
   \item{log}{a logical value (default value is \code{FALSE}); 
-        if \code{TRUE}, the logarithm of the density is computed}
+    if \code{TRUE}, the logarithm of the density is computed}
   \item{...}{parameters passed to \code{sadmvn}, 
-          among \code{maxpts}, \code{abseps}, \code{releps} }
-  \item{n}{the number of random  numbers to be generated}
+    among \code{maxpts}, \code{abseps}, \code{releps} }
+  \item{n}{the number of random  vectors to be generated}
   \item{lower}{a numeric vector of lower integration limits of 
-        the density function; must be of maximal length 20; 
-        \code{+Inf} and \code{-Inf} entries are allowed }
+    the density function; must be of maximal length \code{20}; 
+    \code{+Inf} and \code{-Inf} entries are allowed }
   \item{upper}{ a numeric vector of upper integration limits 
-          of the density function; must be of maximal length 20; 
-          \code{+Inf} and \code{-Inf} entries are allowed }
+    of the density function; must be of maximal length \code{20}; 
+    \code{+Inf} and \code{-Inf} entries are allowed }
   \item{maxpts}{the maximum number of function evaluations 
-               (default value: \code{2000*d})}
+    (default value: \code{2000*d})}
   \item{abseps}{absolute error tolerance (default value: \code{1e-6})}
   \item{releps}{relative error tolerance (default value: \code{0})}
 }
@@ -59,7 +54,8 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000 * d, abseps = 1e-06, releps = 0
 \value{
   \code{dmnorm} returns a vector of density values (possibly log-transformed);
   \code{pmnorm} and \code{sadmvn} return a single probability with 
-   attributes giving details on the achieved accuracy;
+   attributes giving details on the achieved accuracy, provided \code{x} 
+   of \code{pmnorm} is a vector;
   \code{rmnorm} returns a matrix of \code{n} rows of random vectors
 }
 \references{
@@ -77,7 +73,8 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000 * d, abseps = 1e-06, releps = 0
 \author{
   Fortran code of \code{SADMVN} and most auxiliary functions by Alan Genz,
   some additional auxiliary functions by people referred to within his 
-  program.  Porting to R and additional R code by Adelchi Azzalini}
+  program.  Interface to R and additional R code by Adelchi Azzalini}
+
 \note{ 
 The attributes \code{error} and \code{status} of the probability
 returned by \code{pmnorm} and \code{sadmvn} indicate whether the function 

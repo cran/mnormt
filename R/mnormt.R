@@ -1,23 +1,23 @@
-# R code of package 'mnormt', version 1.4-1 (2011-03-21). 
+# R code of package 'mnormt', version 1.5-0 (2014-06-24). 
 # Author: Adelchi Azzalini (University of Padua, Italy) 
 
 dmnorm <- function(x, mean=rep(0,d), varcov, log=FALSE)
 {
   d <- if(is.matrix(varcov)) ncol(varcov) else 1
   if(d==1) return(dnorm(x, mean, sqrt(varcov), log=log))
+  if (ncol(x) != d) stop("mismatch of dimensions of 'x' and 'varcov'")
   x <- if (is.vector(x)) matrix(x, 1, d) else data.matrix(x)
-  if (is.vector(mean)) mean <- outer(rep(1, nrow(x)), mean)
-  if (is.matrix(mean) && (nrow(mean) != nrow(x) || ncol(mean) != ncol(x)))
-     stop("mismatch of dimensions of 'x' and 'mean'")
+  if (is.matrix(mean)) {if ((nrow(x) != nrow(mean)) || (ncol(mean) != d))
+      stop("mismatch of dimensions of 'x' and 'mean'") }
   if(is.vector(mean)) mean <- outer(rep(1, nrow(x)), mean)
   X  <- t(x - mean)
   conc <- pd.solve(varcov, log.det=TRUE)
-  Q  <- apply((conc %*% X)* X, 2, sum) 
+  # Q  <- apply((conc %*% X)* X, 2, sum) 
+  Q <- colSums((conc %*% X)* X)
   log.det <- attr(conc, "log.det")
-  logPDF <- as.vector(Q + d*logb(2*pi)+log.det)/(-2)
+  logPDF <- as.vector(Q + d*logb(2*pi) + log.det)/(-2)
   if(log) logPDF else exp(logPDF)
 }
-
 
 rmnorm <- function(n=1, mean=rep(0,d), varcov)
  {
@@ -28,11 +28,20 @@ rmnorm <- function(n=1, mean=rep(0,d), varcov)
  }
 
 
-pmnorm <- function(x, mean=rep(0,length(x)), varcov, ...)
-  if(length(x) == 2) 
-    biv.nt.prob(0, lower=rep(-Inf, 2), upper=x, mean, varcov)  else  
-    sadmvn(lower=rep(-Inf, length(x)), upper=x, mean, varcov, ...) 
- 
+pmnorm <- function(x, mean=rep(0, d), varcov, ...) {
+  d <- NCOL(varcov)
+  x <- if (is.vector(x)) matrix(x, 1, d) else data.matrix(x)
+  n <- NROW(x)
+  if(!is.matrix(mean)) mean <- outer(rep(1, n), mean)
+  if(d == 1) p <- as.vector(pnorm(x, mean, sqrt(varcov))) else {
+    pv <- numeric(n)
+    for (j in 1:n) p <- pv[j] <- if(d == 2)
+           biv.nt.prob(0, lower=rep(-Inf, 2), upper=x[j,], mean[j,], varcov)   
+      else sadmvn(lower=rep(-Inf, d), upper=x[j,], mean[j,], varcov, ...) 
+    if(n > 1) p <- pv 
+    }
+  return(p)  
+  }
 
 sadmvn <- function(lower, upper, mean, varcov,  
                    maxpts=2000*d, abseps=1e-6, releps=0)
@@ -45,7 +54,7 @@ sadmvn <- function(lower, upper, mean, varcov,
   rho <- cov2cor(varcov)
   lower <- as.double((lower-mean)/sd)
   upper <- as.double((upper-mean)/sd)
-  if(d == 1) return(pnorm(upper)-pnorm(lower))
+  if(d == 1) return(pnorm(upper) - pnorm(lower))
   infin <- rep(2,d)
   infin <- replace(infin, (upper == Inf) & (lower > -Inf), 1)
   infin <- replace(infin, (upper < Inf) & (lower == -Inf), 0)
@@ -88,17 +97,18 @@ dmt <- function (x, mean=rep(0,d), S, df = Inf, log = FALSE)
   d <- if(is.matrix(S)) ncol(S) else 1
   if (d==1) {
     y <- dt((x-mean)/sqrt(S), df=df, log=log)
-    if(log) y <- y-0.5*logb(S) else y<- y/sqrt(S)
+    if(log) y <- y-0.5*logb(S) else y <- y/sqrt(S)
     return(y)
     }
+  if (ncol(x) != d) stop("mismatch of dimensions of 'x' and 'varcov'")
   x <- if (is.vector(x)) matrix(x, 1, d) else data.matrix(x)
-  if (is.vector(mean)) mean <- outer(rep(1, nrow(x)), mean)
-  if (is.matrix(mean) && (nrow(mean) != nrow(x) || ncol(mean) != ncol(x)))
-     stop("mismatch of dimensions of 'x' and 'mean'")
+  if (is.matrix(mean)) {if ((nrow(x) != nrow(mean)) || (ncol(mean) != d))
+      stop("mismatch of dimensions of 'x' and 'mean'") }
   if(is.vector(mean)) mean <- outer(rep(1, nrow(x)), mean)
   X  <- t(x - mean)
   S.inv <- pd.solve(S, log.det=TRUE)
-  Q <- apply((S.inv %*% X) * X, 2, sum)
+  # Q <- apply((S.inv %*% X) * X, 2, sum)
+  Q <- colSums((S.inv %*% X) * X)
   logDet <- attr(S.inv, "log.det")
   logPDF <- (lgamma((df + d)/2) - 0.5 * (d * logb(pi * df) + logDet)
              - lgamma(df/2) - 0.5 * (df + d) * logb(1 + Q/df))
@@ -114,11 +124,20 @@ rmt <- function(n=1, mean=rep(0,d), S, df=Inf)
   return(y)
 }
 
-
-pmt <- function(x, mean=rep(0,length(x)), S, df=Inf, ...){
-  if(length(x) == 2) 
-    biv.nt.prob(df, lower=rep(-Inf, 2), upper=x, mean, S) else  
-    sadmvt(df, lower=rep(-Inf, length(x)), upper=x, mean, S, ...)  
+ 
+pmt <- function(x, mean=rep(0, d), S, df=Inf, ...){
+  d <- NCOL(S)
+  x <- if (is.vector(x)) matrix(x, 1, d) else data.matrix(x)
+  n <- NROW(x)
+  if(!is.matrix(mean)) mean <- outer(rep(1, n), mean)
+  if(d == 1) p <- as.vector(pt((x-mean)/sqrt(S), df=df)) else {
+    pv <- numeric(n)
+    for (j in 1:n) p <- pv[j] <- if(d == 2)
+           biv.nt.prob(df, lower=rep(-Inf, 2), upper=x[j,], mean[j,], S)   
+      else sadmvt(df, lower=rep(-Inf, d), upper=x[j,], mean[j,], S, ...)
+     if(n > 1) p <- pv    
+     }
+  return(p)  
   }
    
 
