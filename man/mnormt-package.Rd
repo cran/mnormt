@@ -14,9 +14,16 @@ Probabilities are computed via a non-Monte Carlo method. Different routines
 are used in the three cases \code{d=1, d=2, d>2}, if \code{d} denotes the 
 number of dimensions. }
 
+\section{Licence}{
+This package and its documentation are usable under the terms of 
+the \dQuote{GNU General Public License} version 3 or version 2,
+as you prefer; a copy of them is available from 
+\url{http://www.R-project.org/Licenses/}.}
+  
+
 \author{
 Adelchi Azzalini (R code and package creation) and Alan Genz (Fortran code, 
-see references below) 
+see references below; this includes routines of other authors) 
 }
 
 \references{

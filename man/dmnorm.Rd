@@ -85,13 +85,15 @@ this is not the case, re-run the function with an higher value of
 \seealso{\code{\link{dnorm}}, \code{\link{dmt}}, \code{\link{biv.nt.prob}}}
 \examples{
 x <- seq(-2,4,length=21)
-y <- 2*x+10
-z <- x+cos(y) 
+y <- cos(2*x) + 10
+z <- x + sin(3*y) 
 mu <- c(1,12,2)
 Sigma <- matrix(c(1,2,0,2,5,0.5,0,0.5,3), 3, 3)
 f <- dmnorm(cbind(x,y,z), mu, Sigma)
+f0 <- dmnorm(mu, mu, Sigma)
 p1 <- pmnorm(c(2,11,3), mu, Sigma)
 p2 <- pmnorm(c(2,11,3), mu, Sigma, maxpts=10000, abseps=1e-10)
+p <- pmnorm(cbind(x,y,z), mu, Sigma)
 x <- rmnorm(10, mu, Sigma)
 p <- sadmvn(lower=c(2,11,3), upper=rep(Inf,3), mu, Sigma) # upper tail
 #

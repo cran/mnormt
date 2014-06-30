@@ -5,8 +5,8 @@ dmnorm <- function(x, mean=rep(0,d), varcov, log=FALSE)
 {
   d <- if(is.matrix(varcov)) ncol(varcov) else 1
   if(d==1) return(dnorm(x, mean, sqrt(varcov), log=log))
-  if (ncol(x) != d) stop("mismatch of dimensions of 'x' and 'varcov'")
   x <- if (is.vector(x)) matrix(x, 1, d) else data.matrix(x)
+  if (ncol(x) != d) stop("mismatch of dimensions of 'x' and 'varcov'")
   if (is.matrix(mean)) {if ((nrow(x) != nrow(mean)) || (ncol(mean) != d))
       stop("mismatch of dimensions of 'x' and 'mean'") }
   if(is.vector(mean)) mean <- outer(rep(1, nrow(x)), mean)
@@ -84,7 +84,7 @@ sadmvn <- function(lower, upper, mean, varcov,
                abseps, releps, error, value, inform, PACKAGE="mnormt")
   prob <- result[[10]]
   attr(prob,"error")  <- result[[9]]
-  attr(prob,"status") <- switch(1+result[[11]], 
+  attr(prob,"status") <- switch(1 + result[[11]], 
                 "normal completion", "accuracy non achieved", "oversize")
   return(prob)
 }
@@ -97,11 +97,11 @@ dmt <- function (x, mean=rep(0,d), S, df = Inf, log = FALSE)
   d <- if(is.matrix(S)) ncol(S) else 1
   if (d==1) {
     y <- dt((x-mean)/sqrt(S), df=df, log=log)
-    if(log) y <- y-0.5*logb(S) else y <- y/sqrt(S)
+    if(log) y <- (y - 0.5*logb(S)) else y <- y/sqrt(S)
     return(y)
     }
-  if (ncol(x) != d) stop("mismatch of dimensions of 'x' and 'varcov'")
   x <- if (is.vector(x)) matrix(x, 1, d) else data.matrix(x)
+  if (ncol(x) != d) stop("mismatch of dimensions of 'x' and 'varcov'")
   if (is.matrix(mean)) {if ((nrow(x) != nrow(mean)) || (ncol(mean) != d))
       stop("mismatch of dimensions of 'x' and 'mean'") }
   if(is.vector(mean)) mean <- outer(rep(1, nrow(x)), mean)
