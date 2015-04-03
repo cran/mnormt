@@ -11,8 +11,8 @@
 \usage{
 dmnorm(x, mean = rep(0, d), varcov, log = FALSE) 
 pmnorm(x, mean = rep(0, d), varcov, ...) 
-rmnorm(n = 1, mean = rep(0, d), varcov) 
-sadmvn(lower, upper, mean, varcov, maxpts = 2000 * d, abseps = 1e-06, releps = 0) 
+rmnorm(n = 1, mean = rep(0, d), varcov, sqrt=NULL) 
+sadmvn(lower, upper, mean, varcov, maxpts = 2000*d, abseps = 1e-06, releps = 0)
 }
 \arguments{
   \item{x}{either a vector of length \code{d} or a matrix with \code{d}
@@ -20,12 +20,16 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000 * d, abseps = 1e-06, releps = 0
     the coordinates of the point(s) where the density must
     be evaluated;  for \code{pmnorm},  \code{d} cannot exceed \code{20}}
   \item{mean}{either a vector of length \code{d}, representing the mean value,
-    or a matrix whose rows represent different mean vectors;
+    or (except for \code{rmnorm}) 
+    a matrix whose rows represent different mean vectors;
     if it is a matrix, its dimensions must match those of \code{x}}
   \item{varcov}{a symmetric positive-definite matrix representing the 
     variance-covariance  matrix of the distribution; 
     a vector of length 1 is also allowed (in this case, \code{d=1} is set)} 
-  \item{log}{a logical value (default value is \code{FALSE}); 
+  \item{sqrt}{if not \code{NULL} (default value is \code{NULL}), 
+    a square root of the  intended \code{varcov} matrix; 
+    see \sQuote{Details} for a detailed description}
+  \item{log}{a logical value (default value is \code{FALSE});
     if \code{TRUE}, the logarithm of the density is computed}
   \item{...}{parameters passed to \code{sadmvn}, 
     among \code{maxpts}, \code{abseps}, \code{releps} }
@@ -50,7 +54,25 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000 * d, abseps = 1e-06, releps = 0
   this makes uses of some auxiliary  functions whose authors are 
   documented in the Fortran code. The routine uses an adaptive 
   integration method. 
-}
+  
+  If \code{sqrt=NULL} (default value), the working of \code{rmnorm} involves 
+  computation of a square root of \code{varcov} via the Cholesky decomposition.
+  If a non-\code{NULL} value of \code{sqrt} is supplied, it  is  assumed 
+  that it represents a matrix, \eqn{R} say, such that \eqn{R' R}
+  represents the required variance-covariance matrix of the distribution;
+  in this case, the argument \code{varcov} is ignored.  
+  This mechanism is intended primarily for use in a sequence of calls to
+  \code{rmnorm}, all sampling from a distribution with fixed variance matrix;
+  a suitable matrix \code{sqrt} can then be computed only once beforehand, 
+  avoiding that the same operation is repeated multiple times along the 
+  sequence of calls; see the examples below.
+  Another use of \code{sqrt} is to supply a different form of square root 
+  of the variance-covariance matrix, in place of the Cholesky factor.
+  
+  For efficiency reasons, \code{rmnorm} performs limited check on the supplied  
+  arguments. 
+  }
+
 \value{
   \code{dmnorm} returns a vector of density values (possibly log-transformed);
   \code{pmnorm} and \code{sadmvn} return a single probability with 
@@ -60,7 +82,7 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000 * d, abseps = 1e-06, releps = 0
 }
 \references{
   Genz, A. (1992).
-  Numerical Computation of Multivariate Normal Probabilities.
+  Numerical Computation of multivariate normal probabilities.
   \emph{J. Computational and Graphical Statist.}, \bold{1}, 141-149.
   
   Genz, A. (1993).  Comparison of methods for the computation of
@@ -82,9 +104,10 @@ had a normal termination, achieving the required accuracy. If
 this is not the case, re-run the function with an higher value of
 \code{maxpts}
 }
-\seealso{\code{\link{dnorm}}, \code{\link{dmt}}, \code{\link{biv.nt.prob}}}
+\seealso{\code{\link[stats:Normal]{dnorm}}, \code{\link{dmt}}, 
+         \code{\link{biv.nt.prob}}}
 \examples{
-x <- seq(-2,4,length=21)
+x <- seq(-2, 4, length=21)
 y <- cos(2*x) + 10
 z <- x + sin(3*y) 
 mu <- c(1,12,2)
@@ -94,7 +117,15 @@ f0 <- dmnorm(mu, mu, Sigma)
 p1 <- pmnorm(c(2,11,3), mu, Sigma)
 p2 <- pmnorm(c(2,11,3), mu, Sigma, maxpts=10000, abseps=1e-10)
 p <- pmnorm(cbind(x,y,z), mu, Sigma)
-x <- rmnorm(10, mu, Sigma)
+#
+set.seed(123)
+x1 <- rmnorm(5, mu, Sigma)
+set.seed(123)
+x2 <- rmnorm(5, mu, sqrt=chol(Sigma)) # x1=x2
+eig <- eigen(Sigma, symmetric = TRUE)
+R <- t(eig$vectors \%*\% diag(sqrt(eig$values)))
+for(i in 1:50) x <- rmnorm(5, mu, sqrt=R)
+#
 p <- sadmvn(lower=c(2,11,3), upper=rep(Inf,3), mu, Sigma) # upper tail
 #
 p0 <- pmnorm(c(2,11), mu[1:2], Sigma[1:2,1:2])

@@ -1,4 +1,4 @@
-# R code of package 'mnormt', version 1.5-0 (2014-06-24). 
+# R code of package 'mnormt' 
 # Author: Adelchi Azzalini (University of Padua, Italy) 
 
 dmnorm <- function(x, mean=rep(0,d), varcov, log=FALSE)
@@ -7,7 +7,7 @@ dmnorm <- function(x, mean=rep(0,d), varcov, log=FALSE)
   if(d==1) return(dnorm(x, mean, sqrt(varcov), log=log))
   x <- if (is.vector(x)) matrix(x, 1, d) else data.matrix(x)
   if (ncol(x) != d) stop("mismatch of dimensions of 'x' and 'varcov'")
-  if (is.matrix(mean)) {if ((nrow(x) != nrow(mean)) || (ncol(mean) != d))
+  if (is.matrix(mean)) { if ((nrow(x) != nrow(mean)) || (ncol(mean) != d))
       stop("mismatch of dimensions of 'x' and 'mean'") }
   if(is.vector(mean)) mean <- outer(rep(1, nrow(x)), mean)
   X  <- t(x - mean)
@@ -19,12 +19,12 @@ dmnorm <- function(x, mean=rep(0,d), varcov, log=FALSE)
   if(log) logPDF else exp(logPDF)
 }
 
-rmnorm <- function(n=1, mean=rep(0,d), varcov)
+rmnorm <- function(n=1, mean=rep(0,d), varcov, sqrt=NULL)
  {
-  d <- if(is.matrix(varcov)) ncol(varcov) else 1
-  z <- matrix(rnorm(n*d),n,d) %*% chol(varcov)
-  y <- t(mean+t(z))
-  return(y)
+  sqrt.varcov <- if(is.null(sqrt)) chol(varcov) else sqrt
+  d <- if(is.matrix(sqrt.varcov)) ncol(sqrt.varcov) else 1
+  if(length(mean) != d) stop("mismatch in dimensions of arguments")
+  drop(t(mean + t(sqrt.varcov) %*% matrix(rnorm(n*d), d, n)))
  }
 
 
@@ -115,16 +115,19 @@ dmt <- function (x, mean=rep(0,d), S, df = Inf, log = FALSE)
   if(log) logPDF else exp(logPDF)
 }
 
-rmt <- function(n=1, mean=rep(0,d), S, df=Inf)
-{ 
-  d <- if(is.matrix(S)) ncol(S) else 1 
-  x <- if(df==Inf) 1 else rchisq(n,df)/df
-  z <- rmnorm(n, rep(0,d), S)
-  y <- t(mean + t(z/sqrt(x)))
-  return(y)
-}
 
+rmt <- function(n=1, mean=rep(0,d), S, df=Inf, sqrt=NULL)
+{ 
+  sqrt.S <- if(is.null(sqrt)) chol(S) else sqrt
+  d <- if(is.matrix(sqrt.S)) ncol(sqrt.S) else 1 
+  if(length(mean) != d) stop("mismatch in dimensions of arguments")
+  x <- if(df==Inf) 1 else rchisq(n, df)/df
+  z <- rmnorm(n, rep(0, d), sqrt=sqrt.S)
+  t(mean + t(z/sqrt(x)))
+}
  
+
+
 pmt <- function(x, mean=rep(0, d), S, df=Inf, ...){
   d <- NCOL(S)
   x <- if (is.vector(x)) matrix(x, 1, d) else data.matrix(x)

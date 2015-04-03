@@ -12,8 +12,8 @@
 \usage{
 dmt(x, mean = rep(0, d), S, df=Inf, log = FALSE) 
 pmt(x, mean = rep(0, d), S, df=Inf, ...) 
-rmt(n = 1, mean = rep(0, d), S, df=Inf) 
-sadmvt(df, lower, upper, mean, S, maxpts = 2000 * d, abseps = 1e-06, releps = 0) 
+rmt(n = 1, mean = rep(0, d), S, df=Inf, sqrt=NULL) 
+sadmvt(df, lower, upper, mean, S, maxpts = 2000*d, abseps = 1e-06, releps = 0) 
 biv.nt.prob(df, lower, upper, mean, S)
 }
 \arguments{
@@ -22,8 +22,9 @@ biv.nt.prob(df, lower, upper, mean, S)
      the coordinates of the point(s) where the density must be evaluated;
      for \code{pmt},  \code{d} cannot exceed \code{20}}
   \item{mean}{either a vector of length \code{d}, representing the location
-     parameter  (equal to the mean vector when \code{df>1}),
-     or a matrix whose rows represent different location vectors;
+     parameter  (equal to the mean vector when \code{df>1}), 
+     or (except for \code{rmt})
+     a matrix whose rows represent different location vectors;
      if it is a matrix, its dimensions must match those of \code{x}}
   \item{S}{a symmetric positive-definite matrix representing the 
      scale matrix of the distribution, such that \code{S*df/(df-2)} is
@@ -36,17 +37,20 @@ biv.nt.prob(df, lower, upper, mean, S)
      \code{biv.nt.prob} is used. If  \code{biv.nt.prob} is called with
      \code{df=Inf}, it returns the probability of a rectangle assigned by
      a bivariate normal distribution} 
-  \item{log}{a logical value; if \code{TRUE}, 
+  \item{log}{a logical value(default value is \code{FALSE}); if \code{TRUE}, 
      the logarithm of the density is computed }    
+  \item{sqrt}{if not \code{NULL} (default value is \code{NULL}), 
+     a square root of the intended scale matrix \code{S}; 
+     see \sQuote{Details} for a detailed description}   
   \item{...}{parameters passed to \code{sadmvt}, 
-          among \code{maxpts}, \code{absrel}, \code{releps} }
+     among \code{maxpts}, \code{absrel}, \code{releps} }
   \item{n}{the number of random  vectors to be generated}
   \item{lower}{a numeric vector of lower integration limits of 
-        the density function; must be of maximal length \code{20}; 
-        \code{+Inf} and \code{-Inf} entries are allowed }
+     the density function; must be of maximal length \code{20}; 
+     \code{+Inf} and \code{-Inf} entries are allowed }
   \item{upper}{ a numeric vector of upper integration limits 
-          of the density function; must be of maximal length \code{20}; 
-          \code{+Inf} and \code{-Inf} entries are allowed }
+     of the density function; must be of maximal length \code{20}; 
+     \code{+Inf} and \code{-Inf} entries are allowed }
   \item{maxpts}{the maximum number of function evaluations 
                (default value: \code{2000*d})}
   \item{abseps}{absolute error tolerance (default value: \code{1e-6})}
@@ -64,6 +68,37 @@ biv.nt.prob(df, lower, upper, mean, S)
   If \code{pmt} is called  with \code{d>2}, this is converted into
   a suitable call to \code{sadmvt}; if \code{d=2}, a call to 
   \code{biv.nt.prob} is used; if \code{d=1}, then \code{pt} is used.
+  
+  If \code{sqrt=NULL} (default value), the working of \code{rmt} involves 
+  computation of a square root of \code{S} via the Cholesky decomposition.
+  If a non-\code{NULL} value of \code{sqrt} is supplied, it is assumed that
+  it represents a square root of the scale matrix,  
+  otherwise represented by \code{S}, whose value is ignored in this case.  
+  This mechanism is intended primarily for use in a sequence of calls to
+  \code{rmt}, all sampling from a distribution with fixed scale matrix;
+  a suitable matrix \code{sqrt} can then be computed only once beforehand, 
+  avoiding that the same operation is repeated multiple times along the 
+  sequence of calls. 
+  Another use of \code{sqrt} is to supply a different form of square root 
+  of the scale matrix, in place of the Cholesky factor.
+  
+
+  If \code{sqrt=NULL} (default value), the working of \code{rmnorm} involves 
+  computation of a square root of \code{S} via the Cholesky decomposition.
+  If a non-\code{NULL} value of \code{sqrt} is supplied, it  is  assumed 
+  that it represents a matrix, \code{R} say, such that \code{R\' R}
+  represents the required scale matrix of the distribution;
+  in this case, the argument \code{S} is ignored.  
+  This mechanism is intended primarily for use in a sequence of calls to
+  \code{rmt}, all sampling from a distribution with fixed scale matrix;
+  a suitable matrix \code{sqrt} can then be computed only once beforehand, 
+  avoiding that the same operation is repeated multiple times along the 
+  sequence of calls. 
+  Another use of \code{sqrt} is to supply a different form of square root 
+  of the scale matrix, in place of the Cholesky factor.
+  
+  For efficiency reasons, \code{rmt} performs limited check on the supplied  
+  arguments.
 }
 \value{
   \code{dmt} returns a vector of density values (possibly log-transformed);
@@ -92,7 +127,8 @@ had a normal termination, achieving the required accuracy. If
 this is not the case, re-run the function with an higher value of
 \code{maxpts}
 }
-\seealso{\code{\link{dt}}, \code{\link{dmnorm}}}
+\seealso{\code{\link[stats:TDist]{dt}}, 
+       \code{\link{dmnorm}} for use of argument \code{sqrt}}
 \examples{
 x <- seq(-2,4,length=21)
 y <- 2*x+10
