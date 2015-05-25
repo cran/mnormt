@@ -5,7 +5,7 @@ dmnorm <- function(x, mean=rep(0,d), varcov, log=FALSE)
 {
   d <- if(is.matrix(varcov)) ncol(varcov) else 1
   if(d==1) return(dnorm(x, mean, sqrt(varcov), log=log))
-  x <- if (is.vector(x)) matrix(x, 1, d) else data.matrix(x)
+  x <- if (is.vector(x)) t(matrix(x)) else data.matrix(x)
   if (ncol(x) != d) stop("mismatch of dimensions of 'x' and 'varcov'")
   if (is.matrix(mean)) { if ((nrow(x) != nrow(mean)) || (ncol(mean) != d))
       stop("mismatch of dimensions of 'x' and 'mean'") }
@@ -100,7 +100,7 @@ dmt <- function (x, mean=rep(0,d), S, df = Inf, log = FALSE)
     if(log) y <- (y - 0.5*logb(S)) else y <- y/sqrt(S)
     return(y)
     }
-  x <- if (is.vector(x)) matrix(x, 1, d) else data.matrix(x)
+  x <- if (is.vector(x)) t(matrix(x)) else data.matrix(x)
   if (ncol(x) != d) stop("mismatch of dimensions of 'x' and 'varcov'")
   if (is.matrix(mean)) {if ((nrow(x) != nrow(mean)) || (ncol(mean) != d))
       stop("mismatch of dimensions of 'x' and 'mean'") }
@@ -121,9 +121,11 @@ rmt <- function(n=1, mean=rep(0,d), S, df=Inf, sqrt=NULL)
   sqrt.S <- if(is.null(sqrt)) chol(S) else sqrt
   d <- if(is.matrix(sqrt.S)) ncol(sqrt.S) else 1 
   if(length(mean) != d) stop("mismatch in dimensions of arguments")
+  old.state <- get(".Random.seed", envir = .GlobalEnv)
   x <- if(df==Inf) 1 else rchisq(n, df)/df
+  assign(".Random.seed", old.state, envir = .GlobalEnv)
   z <- rmnorm(n, rep(0, d), sqrt=sqrt.S)
-  t(mean + t(z/sqrt(x)))
+  drop(t(mean + t(z/sqrt(x))))
 }
  
 

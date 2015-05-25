@@ -8,7 +8,7 @@ R package 'mnormt' history file
 2007-03-16: 1.2-1 some amendments in documentation
 2008-06-12: 1.3-0 added Fortran code for the bivariate case; improved R coding
 2009-01-26: 1.3-2 minor modification to F77 code to avoid GOTO outside IF block
-2009-03-21: 1.3-3 romoved check on the R version, at request of the R Core team
+2009-03-21: 1.3-3 removed check on the R version, at request of the R Core team
 2009-11-25: 1.3-4 fixed a bug affecting the case d>2 & df=Inf
 2011-01-16: 1.4-0 pd.solve() introduced; argument 'mean' can now be a matrix
 2011-04-06: 1.4-1 fixed documentation, coding of dmnorm & dmt is straightened,
@@ -22,3 +22,5 @@ R package 'mnormt' history file
 2014-06-30: 1.5-1 fixes a bug of parameter checking in dmnorm and dmt
 2015-04-02: 1.5-2 new argument 'sqrt' of dmnorm and dmt, also limited check of 
                   the arguments is introduced (skipped earlier for speed)
+2015-05-25: 1.5-3 rmt and rmnorm output with d=1 have now the same structure;
+                  improved checks on arguments supplied to dmnorm and dmt

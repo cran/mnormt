@@ -41,7 +41,7 @@ biv.nt.prob(df, lower, upper, mean, S)
      the logarithm of the density is computed }    
   \item{sqrt}{if not \code{NULL} (default value is \code{NULL}), 
      a square root of the intended scale matrix \code{S}; 
-     see \sQuote{Details} for a detailed description}   
+     see \sQuote{Details} for a full description}   
   \item{...}{parameters passed to \code{sadmvt}, 
      among \code{maxpts}, \code{absrel}, \code{releps} }
   \item{n}{the number of random  vectors to be generated}
@@ -82,11 +82,10 @@ biv.nt.prob(df, lower, upper, mean, S)
   Another use of \code{sqrt} is to supply a different form of square root 
   of the scale matrix, in place of the Cholesky factor.
   
-
   If \code{sqrt=NULL} (default value), the working of \code{rmnorm} involves 
   computation of a square root of \code{S} via the Cholesky decomposition.
   If a non-\code{NULL} value of \code{sqrt} is supplied, it  is  assumed 
-  that it represents a matrix, \code{R} say, such that \code{R\' R}
+  that it represents a matrix, \eqn{R} say, such that \eqn{R' R}
   represents the required scale matrix of the distribution;
   in this case, the argument \code{S} is ignored.  
   This mechanism is intended primarily for use in a sequence of calls to
@@ -146,7 +145,6 @@ p0 <- pmt(c(2,11), mu[1:2], Sigma[1:2,1:2], df=5)
 p1 <- biv.nt.prob(5, lower=rep(-Inf,2), upper=c(2, 11), mu[1:2], Sigma[1:2,1:2])
 p2 <- sadmvt(5, lower=rep(-Inf,2), upper=c(2, 11), mu[1:2], Sigma[1:2,1:2]) 
 c(p0, p1, p2, p0-p1, p0-p2)
-
 }
 \keyword{distribution}
 \keyword{multivariate}

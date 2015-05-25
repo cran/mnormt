@@ -28,7 +28,7 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000*d, abseps = 1e-06, releps = 0)
     a vector of length 1 is also allowed (in this case, \code{d=1} is set)} 
   \item{sqrt}{if not \code{NULL} (default value is \code{NULL}), 
     a square root of the  intended \code{varcov} matrix; 
-    see \sQuote{Details} for a detailed description}
+    see \sQuote{Details} for a full description}
   \item{log}{a logical value (default value is \code{FALSE});
     if \code{TRUE}, the logarithm of the density is computed}
   \item{...}{parameters passed to \code{sadmvn}, 
@@ -69,7 +69,7 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000*d, abseps = 1e-06, releps = 0)
   Another use of \code{sqrt} is to supply a different form of square root 
   of the variance-covariance matrix, in place of the Cholesky factor.
   
-  For efficiency reasons, \code{rmnorm} performs limited check on the supplied  
+  For efficiency reasons, \code{rmnorm} performs limited check on the supplied 
   arguments. 
   }
 
