@@ -22,10 +22,9 @@ biv.nt.prob(df, lower, upper, mean, S)
      the coordinates of the point(s) where the density must be evaluated;
      for \code{pmt},  \code{d} cannot exceed \code{20}}
   \item{mean}{either a vector of length \code{d}, representing the location
-     parameter  (equal to the mean vector when \code{df>1}), 
-     or (except for \code{rmt})
-     a matrix whose rows represent different location vectors;
-     if it is a matrix, its dimensions must match those of \code{x}}
+     parameter (equal to the mean vector when \code{df>1}) or a matrix 
+     whose rows represent different mean vectors (except for \code{rmt}); 
+     in the matrix case, its dimensions must match those of \code{x}};
   \item{S}{a symmetric positive-definite matrix representing the 
      scale matrix of the distribution, such that \code{S*df/(df-2)} is
      the variance-covariance matrix  when \code{df>2};  a vector of
@@ -78,26 +77,20 @@ biv.nt.prob(df, lower, upper, mean, S)
   \code{rmt}, all sampling from a distribution with fixed scale matrix;
   a suitable matrix \code{sqrt} can then be computed only once beforehand, 
   avoiding that the same operation is repeated multiple times along the 
-  sequence of calls. 
+  sequence of calls. For examples of use of this argument, see those in the 
+  documentation of \code{\link{rmnorm}}.  
   Another use of \code{sqrt} is to supply a different form of square root 
   of the scale matrix, in place of the Cholesky factor.
   
-  If \code{sqrt=NULL} (default value), the working of \code{rmnorm} involves 
-  computation of a square root of \code{S} via the Cholesky decomposition.
-  If a non-\code{NULL} value of \code{sqrt} is supplied, it  is  assumed 
-  that it represents a matrix, \eqn{R} say, such that \eqn{R' R}
-  represents the required scale matrix of the distribution;
-  in this case, the argument \code{S} is ignored.  
-  This mechanism is intended primarily for use in a sequence of calls to
-  \code{rmt}, all sampling from a distribution with fixed scale matrix;
-  a suitable matrix \code{sqrt} can then be computed only once beforehand, 
-  avoiding that the same operation is repeated multiple times along the 
-  sequence of calls. 
-  Another use of \code{sqrt} is to supply a different form of square root 
-  of the scale matrix, in place of the Cholesky factor.
-  
-  For efficiency reasons, \code{rmt} performs limited check on the supplied  
+  For efficiency reasons, \code{rmt} does not perform checks on the supplied  
   arguments.
+  
+  If, after setting the same seed value to \code{\link[base:Random]{set.seed}},
+  two calls to \code{rmnorm} are made with the same arguments except that one
+  generates \code{n1} vectors and the other \code{n2} vectors, with
+  \code{n1<n2}, then the \code{n1} vectors of the first call coincide with the
+  initial \code{n2} vectors of the second call.
+  
 }
 \value{
   \code{dmt} returns a vector of density values (possibly log-transformed);
@@ -122,12 +115,12 @@ biv.nt.prob(df, lower, upper, mean, S)
 \note{ 
 The attributes \code{error} and \code{status} of the probability
 returned by \code{pmt} and \code{sadmvt} indicate whether the function 
-had a normal termination, achieving the required accuracy. If
-this is not the case, re-run the function with an higher value of
+had a normal termination, achieving the required accuracy. 
+If this is not the case, re-run the function with a higher value of
 \code{maxpts}
 }
 \seealso{\code{\link[stats:TDist]{dt}}, 
-       \code{\link{dmnorm}} for use of argument \code{sqrt}}
+       \code{\link{rmnorm}} for use of argument \code{sqrt}}
 \examples{
 x <- seq(-2,4,length=21)
 y <- 2*x+10

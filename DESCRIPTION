@@ -1,6 +1,6 @@
 Package: mnormt
-Version: 1.5-3
-Date: 2015-05-25
+Version: 1.5-4
+Date: 2016-03-08
 Title: The Multivariate Normal and t Distributions
 Author: Fortran code by Alan Genz, R code by Adelchi Azzalini 
 Maintainer: Adelchi Azzalini <adelchi.azzalini@unipd.it>
@@ -8,11 +8,11 @@ Depends: R (>= 2.2.0)
 Description: Functions are provided for computing the density and the
   distribution function of multivariate normal and "t" random variables,
   and for generating random vectors sampled from these distributions.  
-  Probabilities are computed via a non-Monte Carlo method. Different routines 
-  are used for the case d=1, d=2, d>2, if d denotes the number of dimensions.
+  Probabilities are computed via non-Monte Carlo methods; different routines 
+  are used in the case d=1, d=2, d>2, if d denotes the number of dimensions.
 License: GPL-2 | GPL-3
 URL: http://azzalini.stat.unipd.it/SW/Pkg-mnormt
 NeedsCompilation: yes
-Packaged: 2015-05-25 13:36:39 UTC; aa
+Packaged: 2016-03-08 10:36:58 UTC; aa
 Repository: CRAN
-Date/Publication: 2015-05-25 18:31:32
+Date/Publication: 2016-03-09 01:11:14

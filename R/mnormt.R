@@ -6,13 +6,12 @@ dmnorm <- function(x, mean=rep(0,d), varcov, log=FALSE)
   d <- if(is.matrix(varcov)) ncol(varcov) else 1
   if(d==1) return(dnorm(x, mean, sqrt(varcov), log=log))
   x <- if (is.vector(x)) t(matrix(x)) else data.matrix(x)
-  if (ncol(x) != d) stop("mismatch of dimensions of 'x' and 'varcov'")
-  if (is.matrix(mean)) { if ((nrow(x) != nrow(mean)) || (ncol(mean) != d))
+  if(ncol(x) != d) stop("mismatch of dimensions of 'x' and 'varcov'")
+  if(is.matrix(mean)) { if ((nrow(x) != nrow(mean)) || (ncol(mean) != d))
       stop("mismatch of dimensions of 'x' and 'mean'") }
-  if(is.vector(mean)) mean <- outer(rep(1, nrow(x)), mean)
+  if(is.vector(mean)) mean <- outer(rep(1, nrow(x)), as.vector(matrix(mean,d)))
   X  <- t(x - mean)
   conc <- pd.solve(varcov, log.det=TRUE)
-  # Q  <- apply((conc %*% X)* X, 2, sum) 
   Q <- colSums((conc %*% X)* X)
   log.det <- attr(conc, "log.det")
   logPDF <- as.vector(Q + d*logb(2*pi) + log.det)/(-2)
@@ -23,16 +22,16 @@ rmnorm <- function(n=1, mean=rep(0,d), varcov, sqrt=NULL)
  {
   sqrt.varcov <- if(is.null(sqrt)) chol(varcov) else sqrt
   d <- if(is.matrix(sqrt.varcov)) ncol(sqrt.varcov) else 1
-  if(length(mean) != d) stop("mismatch in dimensions of arguments")
-  drop(t(mean + t(sqrt.varcov) %*% matrix(rnorm(n*d), d, n)))
+  mean <- outer(rep(1,n), as.vector(matrix(mean,d)))
+  drop(mean + t(matrix(rnorm(n*d), d, n)) %*% sqrt.varcov)
  }
 
 
 pmnorm <- function(x, mean=rep(0, d), varcov, ...) {
   d <- NCOL(varcov)
   x <- if (is.vector(x)) matrix(x, 1, d) else data.matrix(x)
-  n <- NROW(x)
-  if(!is.matrix(mean)) mean <- outer(rep(1, n), mean)
+  n <- nrow(x)
+  if(is.vector(mean)) mean <- outer(rep(1, n), as.vector(matrix(mean,d)))
   if(d == 1) p <- as.vector(pnorm(x, mean, sqrt(varcov))) else {
     pv <- numeric(n)
     for (j in 1:n) p <- pv[j] <- if(d == 2)
@@ -104,10 +103,9 @@ dmt <- function (x, mean=rep(0,d), S, df = Inf, log = FALSE)
   if (ncol(x) != d) stop("mismatch of dimensions of 'x' and 'varcov'")
   if (is.matrix(mean)) {if ((nrow(x) != nrow(mean)) || (ncol(mean) != d))
       stop("mismatch of dimensions of 'x' and 'mean'") }
-  if(is.vector(mean)) mean <- outer(rep(1, nrow(x)), mean)
+  if(is.vector(mean)) mean <- outer(rep(1, nrow(x)), as.vector(matrix(mean,d)))
   X  <- t(x - mean)
   S.inv <- pd.solve(S, log.det=TRUE)
-  # Q <- apply((S.inv %*% X) * X, 2, sum)
   Q <- colSums((S.inv %*% X) * X)
   logDet <- attr(S.inv, "log.det")
   logPDF <- (lgamma((df + d)/2) - 0.5 * (d * logb(pi * df) + logDet)
@@ -120,21 +118,21 @@ rmt <- function(n=1, mean=rep(0,d), S, df=Inf, sqrt=NULL)
 { 
   sqrt.S <- if(is.null(sqrt)) chol(S) else sqrt
   d <- if(is.matrix(sqrt.S)) ncol(sqrt.S) else 1 
-  if(length(mean) != d) stop("mismatch in dimensions of arguments")
   old.state <- get(".Random.seed", envir = .GlobalEnv)
   x <- if(df==Inf) 1 else rchisq(n, df)/df
   assign(".Random.seed", old.state, envir = .GlobalEnv)
   z <- rmnorm(n, rep(0, d), sqrt=sqrt.S)
-  drop(t(mean + t(z/sqrt(x))))
+  mean <- outer(rep(1, n), as.vector(matrix(mean,d)))
+  drop(mean + z/sqrt(x))
 }
  
 
 
 pmt <- function(x, mean=rep(0, d), S, df=Inf, ...){
   d <- NCOL(S)
-  x <- if (is.vector(x)) matrix(x, 1, d) else data.matrix(x)
-  n <- NROW(x)
-  if(!is.matrix(mean)) mean <- outer(rep(1, n), mean)
+  x <- if(is.vector(x)) matrix(x, 1, d) else data.matrix(x)
+  n <- nrow(x)
+  if(is.vector(mean)) mean <- outer(rep(1, n), as.vector(matrix(mean,d)))
   if(d == 1) p <- as.vector(pt((x-mean)/sqrt(S), df=df)) else {
     pv <- numeric(n)
     for (j in 1:n) p <- pv[j] <- if(d == 2)
@@ -231,7 +229,7 @@ pd.solve <- function(x, silent=FALSE, log.det=FALSE)
 {
   if(is.null(x)) return(NULL)
   if(any(is.na(x)))
-    { if(silent) return (NULL) else stop("NA's in x") } 
+    {if(silent) return (NULL) else stop("NA's in x") } 
   if(length(x) == 1) x <- as.matrix(x)
   if(!is.matrix(x)) 
     {if(silent) return(NULL) else stop("x is not a matrix")}
@@ -244,12 +242,12 @@ pd.solve <- function(x, silent=FALSE, log.det=FALSE)
        stop("x appears to be not positive definite") }
   inv <- chol2inv(u)
   if(log.det) attr(inv, "log.det") <- 2 * sum(log(diag(u)))
+  dimnames(inv) <- dimnames(x)
   return(inv)
 }
 
 .onLoad <- function(library, pkg)
 { 
-   # Rv <- R.Version()
    library.dynam("mnormt", pkg, library)
    invisible()
 }

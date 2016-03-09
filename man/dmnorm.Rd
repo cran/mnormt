@@ -20,9 +20,10 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000*d, abseps = 1e-06, releps = 0)
     the coordinates of the point(s) where the density must
     be evaluated;  for \code{pmnorm},  \code{d} cannot exceed \code{20}}
   \item{mean}{either a vector of length \code{d}, representing the mean value,
-    or (except for \code{rmnorm}) 
-    a matrix whose rows represent different mean vectors;
-    if it is a matrix, its dimensions must match those of \code{x}}
+    or (except for \code{rmnorm}) a matrix whose rows represent different 
+    mean vectors; in the matrix case, only allowed for \code{dmnorm} and 
+    \code{pmnorm}, its dimensions must match those of \code{x}}
+   
   \item{varcov}{a symmetric positive-definite matrix representing the 
     variance-covariance  matrix of the distribution; 
     a vector of length 1 is also allowed (in this case, \code{d=1} is set)} 
@@ -50,10 +51,10 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000*d, abseps = 1e-06, releps = 0)
   \code{sadmvn} if \code{d>2}, or to \code{biv.nt.prob} if \code{d=2}, 
   or to \code{pnorm} if \code{d=1}.
   Function \code{sadmvn} is an interface to a Fortran-77 routine with 
-  the same name written  by Alan Genz, and available from his web page; 
-  this makes uses of some auxiliary  functions whose authors are 
-  documented in the Fortran code. The routine uses an adaptive 
-  integration method. 
+  the same name written  by Alan Genz, available from his web page,
+  which works using an adaptive  integration method.  
+  This Fortran-77 routine makes uses of some auxiliary functions whose authors 
+  are documented in the code. 
   
   If \code{sqrt=NULL} (default value), the working of \code{rmnorm} involves 
   computation of a square root of \code{varcov} via the Cholesky decomposition.
@@ -69,16 +70,25 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000*d, abseps = 1e-06, releps = 0)
   Another use of \code{sqrt} is to supply a different form of square root 
   of the variance-covariance matrix, in place of the Cholesky factor.
   
-  For efficiency reasons, \code{rmnorm} performs limited check on the supplied 
-  arguments. 
+  For efficiency reasons, \code{rmnorm} does not perform checks on the supplied  
+  arguments.
+  
+  If, after setting the same seed value to \code{\link[base:Random]{set.seed}},
+  two calls to \code{rmnorm} are made with the same arguments except that one
+  generates \code{n1} vectors and the other \code{n2} vectors, with
+  \code{n1<n2}, then the \code{n1} vectors of the first call coincide with the
+  initial \code{n2} vectors of the second call.
+  
   }
 
 \value{
   \code{dmnorm} returns a vector of density values (possibly log-transformed);
-  \code{pmnorm} and \code{sadmvn} return a single probability with 
-   attributes giving details on the achieved accuracy, provided \code{x} 
-   of \code{pmnorm} is a vector;
+  \code{pmnorm} returns a vector of probabilities, possibly with attributes
+  on the accuracy in case \code{x}  is a vector;
+   \code{sadmvn} return a single probability with 
+   attributes giving details on the achieved accuracy;
   \code{rmnorm} returns a matrix of \code{n} rows of random vectors
+  or a vector in case \code{n=1}.
 }
 \references{
   Genz, A. (1992).
@@ -100,8 +110,8 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000*d, abseps = 1e-06, releps = 0)
 \note{ 
 The attributes \code{error} and \code{status} of the probability
 returned by \code{pmnorm} and \code{sadmvn} indicate whether the function 
-had a normal termination, achieving the required accuracy. If
-this is not the case, re-run the function with an higher value of
+had a normal termination, achieving the required accuracy. 
+If this is not the case, re-run the function with a higher value of
 \code{maxpts}
 }
 \seealso{\code{\link[stats:Normal]{dnorm}}, \code{\link{dmt}}, 

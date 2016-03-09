@@ -12,8 +12,8 @@
 
   \item{silent}{a logical value which indicates the action to take in case of 
     an error. If \code{silent==TRUE} and an error occurs, the function
-    silently returns a \code{NULL} value; if \code{silent==FALSE} (default) an
-    error generates a \code{stop} with an error message.}
+    silently returns a \code{NULL} value; if \code{silent==FALSE} (default), 
+    an error generates a \code{stop} with an error message.}
 
   \item{log.det}{ a logical value to indicate whether the log-determinant
     of \code{x} is required (default is \code{FALSE}).}  
