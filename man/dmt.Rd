@@ -20,40 +20,40 @@ biv.nt.prob(df, lower, upper, mean, S)
   \item{x}{ either a vector of length \code{d} 
      or a matrix with \code{d} columns, where \code{d=ncol(S)}, giving
      the coordinates of the point(s) where the density must be evaluated;
-     for \code{pmt},  \code{d} cannot exceed \code{20}}
+     for \code{pmt},  \code{d} cannot exceed \code{20}.}
   \item{mean}{either a vector of length \code{d}, representing the location
      parameter (equal to the mean vector when \code{df>1}) or a matrix 
      whose rows represent different mean vectors (except for \code{rmt}); 
-     in the matrix case, its dimensions must match those of \code{x}};
+     in the matrix case, its dimensions must match those of \code{x}.}
   \item{S}{a symmetric positive-definite matrix representing the 
      scale matrix of the distribution, such that \code{S*df/(df-2)} is
      the variance-covariance matrix  when \code{df>2};  a vector of
-     length \code{1} is also allowed (in this case, \code{d=1} is set)}
+     length \code{1} is also allowed (in this case, \code{d=1} is set).}
   \item{df}{degrees of freedom; it must be a positive integer for \code{pmt}, 
      \code{sadmvt} and \code{biv.nt.prob}, otherwise a positive number. 
      If \code{df=Inf} (default value), the corresponding \code{*mnorm}
      function is called, unless \code{d=2}; in this case
      \code{biv.nt.prob} is used. If  \code{biv.nt.prob} is called with
      \code{df=Inf}, it returns the probability of a rectangle assigned by
-     a bivariate normal distribution} 
+     a bivariate normal distribution.} 
   \item{log}{a logical value(default value is \code{FALSE}); if \code{TRUE}, 
-     the logarithm of the density is computed }    
+     the logarithm of the density is computed.}    
   \item{sqrt}{if not \code{NULL} (default value is \code{NULL}), 
      a square root of the intended scale matrix \code{S}; 
-     see \sQuote{Details} for a full description}   
+     see \sQuote{Details} for a full description.}   
   \item{...}{parameters passed to \code{sadmvt}, 
-     among \code{maxpts}, \code{absrel}, \code{releps} }
+     among \code{maxpts}, \code{absrel}, \code{releps}.}
   \item{n}{the number of random  vectors to be generated}
   \item{lower}{a numeric vector of lower integration limits of 
      the density function; must be of maximal length \code{20}; 
-     \code{+Inf} and \code{-Inf} entries are allowed }
+     \code{+Inf} and \code{-Inf} entries are allowed.}
   \item{upper}{ a numeric vector of upper integration limits 
      of the density function; must be of maximal length \code{20}; 
      \code{+Inf} and \code{-Inf} entries are allowed }
   \item{maxpts}{the maximum number of function evaluations 
                (default value: \code{2000*d})}
-  \item{abseps}{absolute error tolerance (default value: \code{1e-6})}
-  \item{releps}{relative error tolerance (default value: \code{0})}
+  \item{abseps}{absolute error tolerance (default value: \code{1e-6}).}
+  \item{releps}{relative error tolerance (default value: \code{0}).}
 }
 \details{
   The functions \code{sadmvt} and \code{biv.nt.prob} are interfaces to 
@@ -85,12 +85,6 @@ biv.nt.prob(df, lower, upper, mean, S)
   For efficiency reasons, \code{rmt} does not perform checks on the supplied  
   arguments.
   
-  If, after setting the same seed value to \code{\link[base:Random]{set.seed}},
-  two calls to \code{rmnorm} are made with the same arguments except that one
-  generates \code{n1} vectors and the other \code{n2} vectors, with
-  \code{n1<n2}, then the \code{n1} vectors of the first call coincide with the
-  initial \code{n2} vectors of the second call.
-  
 }
 \value{
   \code{dmt} returns a vector of density values (possibly log-transformed);
@@ -110,14 +104,15 @@ biv.nt.prob(df, lower, upper, mean, S)
 \author{
   Fortran code of \code{SADMVT} and most auxiliary functions by Alan Genz,
   some additional auxiliary functions by people referred to within his 
-  program.  Interface to R and additional R code by Adelchi Azzalini}
+  program; interface to \R and additional \R code by Adelchi Azzalini.}
 
 \note{ 
-The attributes \code{error} and \code{status} of the probability
-returned by \code{pmt} and \code{sadmvt} indicate whether the function 
+The attributes \code{error} and \code{status} of the probability returned 
+by \code{sadmvt} and by \code{pmt} (the latter only if \code{x} is a vector 
+and \code{d>2}) indicate whether the function 
 had a normal termination, achieving the required accuracy. 
 If this is not the case, re-run the function with a higher value of
-\code{maxpts}
+\code{maxpts}.
 }
 \seealso{\code{\link[stats:TDist]{dt}}, 
        \code{\link{rmnorm}} for use of argument \code{sqrt}}

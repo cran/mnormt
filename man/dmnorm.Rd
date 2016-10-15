@@ -18,33 +18,40 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000*d, abseps = 1e-06, releps = 0)
   \item{x}{either a vector of length \code{d} or a matrix with \code{d}
     columns, where \code{d=ncol(varcov)}, representing
     the coordinates of the point(s) where the density must
-    be evaluated;  for \code{pmnorm},  \code{d} cannot exceed \code{20}}
+    be evaluated;  for \code{pmnorm},  \code{d} cannot exceed \code{20}.}
   \item{mean}{either a vector of length \code{d}, representing the mean value,
     or (except for \code{rmnorm}) a matrix whose rows represent different 
     mean vectors; in the matrix case, only allowed for \code{dmnorm} and 
-    \code{pmnorm}, its dimensions must match those of \code{x}}
+    \code{pmnorm}, its dimensions must match those of \code{x}.}
    
   \item{varcov}{a symmetric positive-definite matrix representing the 
     variance-covariance  matrix of the distribution; 
-    a vector of length 1 is also allowed (in this case, \code{d=1} is set)} 
+    a vector of length 1 is also allowed (in this case, \code{d=1} is set).} 
+    
   \item{sqrt}{if not \code{NULL} (default value is \code{NULL}), 
     a square root of the  intended \code{varcov} matrix; 
-    see \sQuote{Details} for a full description}
+    see \sQuote{Details} for a full description.}
+
   \item{log}{a logical value (default value is \code{FALSE});
-    if \code{TRUE}, the logarithm of the density is computed}
+    if \code{TRUE}, the logarithm of the density is computed.}
+    
   \item{...}{parameters passed to \code{sadmvn}, 
-    among \code{maxpts}, \code{abseps}, \code{releps} }
-  \item{n}{the number of random  vectors to be generated}
+    among \code{maxpts}, \code{abseps}, \code{releps}.}
+    
+  \item{n}{the number of random  vectors to be generated.}
+  
   \item{lower}{a numeric vector of lower integration limits of 
     the density function; must be of maximal length \code{20}; 
-    \code{+Inf} and \code{-Inf} entries are allowed }
+    \code{+Inf} and \code{-Inf} entries are allowed.}
+    
   \item{upper}{ a numeric vector of upper integration limits 
     of the density function; must be of maximal length \code{20}; 
-    \code{+Inf} and \code{-Inf} entries are allowed }
+    \code{+Inf} and \code{-Inf} entries are allowed.}
+  
   \item{maxpts}{the maximum number of function evaluations 
-    (default value: \code{2000*d})}
-  \item{abseps}{absolute error tolerance (default value: \code{1e-6})}
-  \item{releps}{relative error tolerance (default value: \code{0})}
+    (default value: \code{2000*d}).}
+  \item{abseps}{absolute error tolerance (default value: \code{1e-6}).}
+  \item{releps}{relative error tolerance (default value: \code{0}).}
 }
 \details{
   The function \code{pmnorm} works by making a suitable call to
@@ -52,7 +59,7 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000*d, abseps = 1e-06, releps = 0)
   or to \code{pnorm} if \code{d=1}.
   Function \code{sadmvn} is an interface to a Fortran-77 routine with 
   the same name written  by Alan Genz, available from his web page,
-  which works using an adaptive  integration method.  
+  which works using an adaptive integration method.  
   This Fortran-77 routine makes uses of some auxiliary functions whose authors 
   are documented in the code. 
   
@@ -105,7 +112,7 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000*d, abseps = 1e-06, releps = 0)
 \author{
   Fortran code of \code{SADMVN} and most auxiliary functions by Alan Genz,
   some additional auxiliary functions by people referred to within his 
-  program.  Interface to R and additional R code by Adelchi Azzalini}
+  program.  Interface to \R and additional \R code by Adelchi Azzalini}
 
 \note{ 
 The attributes \code{error} and \code{status} of the probability

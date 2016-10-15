@@ -118,9 +118,7 @@ rmt <- function(n=1, mean=rep(0,d), S, df=Inf, sqrt=NULL)
 { 
   sqrt.S <- if(is.null(sqrt)) chol(S) else sqrt
   d <- if(is.matrix(sqrt.S)) ncol(sqrt.S) else 1 
-  old.state <- get(".Random.seed", envir = .GlobalEnv)
   x <- if(df==Inf) 1 else rchisq(n, df)/df
-  assign(".Random.seed", old.state, envir = .GlobalEnv)
   z <- rmnorm(n, rep(0, d), sqrt=sqrt.S)
   mean <- outer(rep(1, n), as.vector(matrix(mean,d)))
   drop(mean + z/sqrt(x))
@@ -242,7 +240,7 @@ pd.solve <- function(x, silent=FALSE, log.det=FALSE)
        stop("x appears to be not positive definite") }
   inv <- chol2inv(u)
   if(log.det) attr(inv, "log.det") <- 2 * sum(log(diag(u)))
-  dimnames(inv) <- dimnames(x)
+  dimnames(inv) <- rev(dimnames(x))
   return(inv)
 }
 
