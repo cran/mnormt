@@ -18,12 +18,12 @@ number of dimensions. }
 This package and its documentation are usable under the terms of 
 the \dQuote{GNU General Public License} version 3 or version 2,
 as you prefer; a copy of them is available from 
-\url{http://www.R-project.org/Licenses/}.}
+\url{https://www.R-project.org/Licenses/}.}
   
 
 \author{
 Adelchi Azzalini (R code and package creation) and Alan Genz (Fortran code, 
-see references below; this includes routines of other authors) 
+see references below; this incorporates routines of other authors) 
 }
 
 \references{

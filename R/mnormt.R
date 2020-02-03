@@ -229,13 +229,13 @@ pd.solve <- function(x, silent=FALSE, log.det=FALSE)
   if(any(is.na(x)))
     {if(silent) return (NULL) else stop("NA's in x") } 
   if(length(x) == 1) x <- as.matrix(x)
-  if(!is.matrix(x)) 
+  if(!(inherits(x, "matrix"))) 
     {if(silent) return(NULL) else stop("x is not a matrix")}
   if(max(abs(x - t(x))) > .Machine$double.eps) 
     {if(silent) return (NULL) else stop("x appears to be not symmetric") } 
   x <- (x + t(x))/2
   u <- try(chol(x, pivot = FALSE), silent = silent)
-  if(class(u) == "try-error") {
+  if(inherits(u, "try-error")) {
      if(silent) return(NULL) else
        stop("x appears to be not positive definite") }
   inv <- chol2inv(u)

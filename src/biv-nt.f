@@ -181,7 +181,7 @@
             BVN = -BVN/TWOPI
          ENDIF
          IF ( R .GT. 0 ) BVN =  BVN + MVPHI( -MAX( H, K ) )
-         IF ( R .LT. 0 ) BVN = -BVN + MAX( ZERO, MVPHI(-H) - MVPHI(-K) )     
+         IF ( R .LT. 0 ) BVN = -BVN + MAX( ZERO, MVPHI(-H) - MVPHI(-K) )
       ENDIF
       MVBVU = BVN
       END
@@ -222,7 +222,7 @@
       ENDIF
       END
 *
-      DOUBLE PRECISION FUNCTION MVBVT( NU, LOWER, UPPER, INFIN, CORREL )      
+      DOUBLE PRECISION FUNCTION MVBVT( NU, LOWER, UPPER, INFIN, CORREL )
 *
 *     A function for computing bivariate normal and t probabilities.
 *
@@ -393,7 +393,7 @@
          hkrn = dh*dk + r*nu  
          hkn = dh*dk - nu  
          hpk = dh + dk 
-         bvt = atan2(-snu*(hkn*qhrk+hpk*hkrn),hkn*hkrn-nu*hpk*qhrk)/tpi  
+         bvt = atan2(-snu*(hkn*qhrk+hpk*hkrn),hkn*hkrn-nu*hpk*qhrk)/tpi
          if ( bvt .lt. -1d-15 ) bvt = bvt + 1
          gmph = dh/( tpi*snu*( 1 + dh**2/nu ) )  
          gmpk = dk/( tpi*snu*( 1 + dk**2/nu ) )  

@@ -251,6 +251,7 @@
 *
       INFORM = 2
       FUNCLS = 0
+      DIVAXN = 0
       CALL BSINIT(NDIM, WEGHTS, LENRUL, POINTS)
       IF ( MINCLS .GE. 0) THEN
 *
@@ -264,7 +265,6 @@
             WIDTH(I) = 1/(2*MESH(I))
             UPPER(I) = 1
          END DO
-         DIVAXN = 0
          RGNCLS = RULCLS
          NWRGNS = 1
  10      CALL DIFFER(NDIM, LOWER, UPPER, WIDTH, WORK, WORK(NDIM+1),  
