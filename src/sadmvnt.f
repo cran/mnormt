@@ -1,7 +1,8 @@
-* Selected portions of code taken from:
+* Selected portions of code dowloaded from:
 *    http://www.math.wsu.edu/math/faculty/genz/software/mvn.f
 *    http://www.math.wsu.edu/math/faculty/genz/software/mvt.f
-* with a few minor modifications (search for 'AA' to find them)
+* with a few very minor modifications by Adelchi Azzalini (Univ. Padua, Italy)
+* required to match CRAN requirements (search for 'AA' to find them)
 *
 * Author:
 *          Alan Genz

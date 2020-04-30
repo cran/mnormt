@@ -94,8 +94,10 @@ biv.nt.prob(df, lower, upper, mean, S)
    \code{rmt} returns a matrix of \code{n} rows of random vectors
    }
 \references{
-  Genz, A.:  Fortran code in files \code{mvt.f} and \code{mvtdstpack.f} 
-  available at \url{http://www.math.wsu.edu/math/faculty/genz/software/} 
+  Genz, A.:  Fortran77 code in files \code{mvt.f} and \code{mvtdstpack.f}  
+  downloaded in 2005 and again 2007 from his webpage, 
+  whose URL as of 2020-04-28 is 
+  \url{http://www.math.wsu.edu/faculty/genz/software/software.html} 
   
   Dunnett, C.W. and Sobel, M. (1954).
   A bivariate generalization of Student's \emph{t}-distribution with tables  

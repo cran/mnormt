@@ -1,4 +1,4 @@
-* Selected portion of code taken from:
+* Selected portion of code downloaded from:
 *    http://www.math.wsu.edu/faculty/genz/software/mvtdstpack.f
 * to compute bivariate normal and Student's t distribution functions.
 *
@@ -12,7 +12,7 @@
 * except for some auxiliary functions whose authors are indicated
 * in the respective code below.
 *
-* In addition the dummy subroutine below has been added, needed to interface 
+* In addition, the dummy subroutine below has been added, needed to interface 
 * R and Fortran.  Adelchi Azzalini, 2008-12-06
 
       SUBROUTINE SMVBVT(PROB, NU, LOWER, UPPER, INFIN, CORREL)      

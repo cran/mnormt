@@ -35,7 +35,7 @@ pmnorm <- function(x, mean=rep(0, d), varcov, ...) {
   if(d == 1) p <- as.vector(pnorm(x, mean, sqrt(varcov))) else {
     pv <- numeric(n)
     for (j in 1:n) p <- pv[j] <- if(d == 2)
-           biv.nt.prob(0, lower=rep(-Inf, 2), upper=x[j,], mean[j,], varcov)   
+           biv.nt.prob(Inf, lower=rep(-Inf, 2), upper=x[j,], mean[j,], varcov)   
       else sadmvn(lower=rep(-Inf, d), upper=x[j,], mean[j,], varcov, ...) 
     if(n > 1) p <- pv 
     }
@@ -54,6 +54,7 @@ sadmvn <- function(lower, upper, mean, varcov,
   lower <- as.double((lower-mean)/sd)
   upper <- as.double((upper-mean)/sd)
   if(d == 1) return(pnorm(upper) - pnorm(lower))
+  if(d == 2) return(biv.nt.prob(Inf, lower, upper, rep(0,2), rho))
   infin <- rep(2,d)
   infin <- replace(infin, (upper == Inf) & (lower > -Inf), 1)
   infin <- replace(infin, (upper < Inf) & (lower == -Inf), 0)
@@ -68,7 +69,7 @@ sadmvn <- function(lower, upper, mean, varcov,
     if(d == 1) return(pnorm(upper) - pnorm(lower))
     rho <- rho[k, k]
     infin <- infin[k]
-    if(d == 2) return(biv.nt.prob(0, lower, upper, rep(0,2), rho))
+    if(d == 2) return(biv.nt.prob(Inf, lower, upper, rep(0,2), rho))
     }
   lower <- replace(lower, lower == -Inf, 0)
   upper <- replace(upper, upper == Inf, 0)
@@ -117,11 +118,13 @@ dmt <- function (x, mean=rep(0,d), S, df = Inf, log = FALSE)
 rmt <- function(n=1, mean=rep(0,d), S, df=Inf, sqrt=NULL)
 { 
   sqrt.S <- if(is.null(sqrt)) chol(S) else sqrt
-  d <- if(is.matrix(sqrt.S)) ncol(sqrt.S) else 1 
-  x <- if(df==Inf) 1 else rchisq(n, df)/df
+  d <- if(is.matrix(sqrt.S)) ncol(sqrt.S) else 1
+  # rs <<- .Random.seed 
+  v <- if(df==Inf) 1 else rchisq(n, df)/df
+  # .Random.seed <<- rs 
   z <- rmnorm(n, rep(0, d), sqrt=sqrt.S)
-  mean <- outer(rep(1, n), as.vector(matrix(mean,d)))
-  drop(mean + z/sqrt(x))
+  mean <- outer(rep(1, n), as.vector(matrix(mean, d)))
+  drop(mean + z/sqrt(v))
 }
  
 
@@ -158,6 +161,7 @@ sadmvt <- function(df, lower, upper, mean, S,
   lower <- as.double((lower-mean)/sd)
   upper <- as.double((upper-mean)/sd)
   if(d == 1) return(pt(upper, df) - pt(lower, df))
+  if(d == 2) return(biv.nt.prob(df, lower, upper, rep(0,2), rho))
   infin <- rep(2,d)
   infin <- replace(infin, (upper == Inf) & (lower > -Inf), 1)
   infin <- replace(infin, (upper < Inf) & (lower == -Inf), 0)
@@ -196,9 +200,9 @@ sadmvt <- function(df, lower, upper, mean, S,
 biv.nt.prob <- function(df, lower, upper, mean, S){
   if(any(dim(S) != c(2,2))) stop("dimensions mismatch")
   if(length(mean) != 2) stop("dimensions mismatch") 
+  # if(df == Inf) nu <- 0
   if(round(df) != df) warning("non integer df is rounded to integer") 
-  nu <- if(df<Inf) as.integer(round(df)) else 0
-  if(df==Inf) nu <- 0
+  nu <- if(df < Inf) as.integer(round(df)) else 0
   sd <- sqrt(diag(S))
   rho <- cov2cor(S)[1,2]
   lower <- as.double((lower-mean)/sd)

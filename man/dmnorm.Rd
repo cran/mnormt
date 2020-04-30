@@ -57,11 +57,13 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000*d, abseps = 1e-06, releps = 0)
   The function \code{pmnorm} works by making a suitable call to
   \code{sadmvn} if \code{d>2}, or to \code{biv.nt.prob} if \code{d=2}, 
   or to \code{pnorm} if \code{d=1}.
-  Function \code{sadmvn} is an interface to a Fortran-77 routine with 
-  the same name written  by Alan Genz, available from his web page,
+  If \code{d>2}, function \code{sadmvn} is an interface to a Fortran-77 
+  routine with  the same name written  by Alan Genz, available from his web page,
   which works using an adaptive integration method.  
-  This Fortran-77 routine makes uses of some auxiliary functions whose authors 
-  are documented in the code. 
+  This Fortran-77 routine makes uses of some auxiliary functions 
+  whose authors are documented in the code. 
+  If \code{d=2}, a call to \code{sadmvn} is translated into one to 
+  \code{biv.nt.prob}; if \code{d=1}, \code{pnorm} is used.   
   
   If \code{sqrt=NULL} (default value), the working of \code{rmnorm} involves 
   computation of a square root of \code{varcov} via the Cholesky decomposition.
@@ -106,9 +108,11 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000*d, abseps = 1e-06, releps = 0)
   multivariate normal probabilities. 
   \emph{Computing Science and Statistics}, \bold{25}, 400-405.
   
-  Genz, A.:  Fortran code available at
-  \url{http://www.math.wsu.edu/math/faculty/genz/software/fort77/mvn.f}
-}
+  Genz, A.:  Fortran77 code downloaded in 2005 and again in 2007 
+  from his web-page,  whose URL as of 2020-04-28 is 
+  \url{http://www.math.wsu.edu/faculty/genz/software/software.html}
+  }
+
 \author{
   Fortran code of \code{SADMVN} and most auxiliary functions by Alan Genz,
   some additional auxiliary functions by people referred to within his 
