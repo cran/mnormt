@@ -1,10 +1,11 @@
-\name{dmt}
+\name{mt}
 \alias{dmt}
 \alias{pmt}
 \alias{rmt}
 \alias{sadmvt}
 \alias{biv.nt.prob}
-\title{Multivariate \emph{t} distribution}
+\alias{ptriv.nt}
+\title{The multivariate Student's \emph{t} distribution}
 \description{
   The probability density function, the distribution function and random
   number generation for the multivariate  Student's \emph{t}  distribution
@@ -15,33 +16,35 @@ pmt(x, mean = rep(0, d), S, df=Inf, ...)
 rmt(n = 1, mean = rep(0, d), S, df=Inf, sqrt=NULL) 
 sadmvt(df, lower, upper, mean, S, maxpts = 2000*d, abseps = 1e-06, releps = 0) 
 biv.nt.prob(df, lower, upper, mean, S)
+ptriv.nt(df, x, mean, S)
 }
 \arguments{
   \item{x}{ either a vector of length \code{d} 
-     or a matrix with \code{d} columns, where \code{d=ncol(S)}, giving
-     the coordinates of the point(s) where the density must be evaluated;
-     for \code{pmt},  \code{d} cannot exceed \code{20}.}
+     or (for \code{dmt} and \code{pmt}) 
+     a matrix with \code{d} columns, where \code{d=ncol(S)}, giving
+     the coordinates of the point(s) where the density must be evaluated.}
   \item{mean}{either a vector of length \code{d}, representing the location
-     parameter (equal to the mean vector when \code{df>1}) or a matrix 
-     whose rows represent different mean vectors (except for \code{rmt}); 
+     parameter (equal to the mean vector when \code{df>1}),  
+     or (for \code{dmt} and \code{pmt}) a matrix 
+     whose rows represent different mean vectors; 
      in the matrix case, its dimensions must match those of \code{x}.}
   \item{S}{a symmetric positive-definite matrix representing the 
      scale matrix of the distribution, such that \code{S*df/(df-2)} is
      the variance-covariance matrix  when \code{df>2};  a vector of
      length \code{1} is also allowed (in this case, \code{d=1} is set).}
-  \item{df}{degrees of freedom; it must be a positive integer for \code{pmt}, 
-     \code{sadmvt} and \code{biv.nt.prob}, otherwise a positive number. 
-     If \code{df=Inf} (default value), the corresponding \code{*mnorm}
-     function is called, unless \code{d=2}; in this case
-     \code{biv.nt.prob} is used. If  \code{biv.nt.prob} is called with
-     \code{df=Inf}, it returns the probability of a rectangle assigned by
-     a bivariate normal distribution.} 
+  \item{df}{the degrees of freedom.  
+    For \code{rmt}, it must be a positive real value or \code{Inf}. 
+    For all other functions, it must be a positive integer or \code{Inf}.
+    A value \code{df=Inf} is translated to a call to a suitable function
+    for the the multivariate normal distribution. 
+    See \sQuote{Details} for its effect for the evaluation of distribution  
+    functions and other probabilities.} 
   \item{log}{a logical value(default value is \code{FALSE}); if \code{TRUE}, 
      the logarithm of the density is computed.}    
   \item{sqrt}{if not \code{NULL} (default value is \code{NULL}), 
      a square root of the intended scale matrix \code{S}; 
      see \sQuote{Details} for a full description.}   
-  \item{...}{parameters passed to \code{sadmvt}, 
+  \item{...}{arguments passed to \code{sadmvt}, 
      among \code{maxpts}, \code{absrel}, \code{releps}.}
   \item{n}{the number of random  vectors to be generated}
   \item{lower}{a numeric vector of lower integration limits of 
@@ -55,18 +58,23 @@ biv.nt.prob(df, lower, upper, mean, S)
   \item{abseps}{absolute error tolerance (default value: \code{1e-6}).}
   \item{releps}{relative error tolerance (default value: \code{0}).}
 }
-\details{
-  The functions \code{sadmvt} and \code{biv.nt.prob} are interfaces to 
-  Fortran-77  routines by Alan Genz, and available from his web page; 
-  they makes uses of some auxiliary  functions whose authors are 
-  documented in the Fortran code. The routine \code{sadmvt} uses an adaptive 
-  integration method. The routine \code{biv.nt.prob} is specific for the
-  bivariate case; if \code{df<1} or \code{df=Inf}, it computes the bivariate 
-  normal distribution function using a non-iterative method described in a
-  reference given below.
-  If \code{pmt} is called  with \code{d>2}, this is converted into
-  a suitable call to \code{sadmvt}; if \code{d=2}, a call to 
-  \code{biv.nt.prob} is used; if \code{d=1}, then \code{pt} is used.
+
+
+\details{The dimension \code{d} cannot exceed \code{20} for \code{pmt}.
+
+  The functions \code{sadmvt}, \code{ptriv.mt} and \code{biv.nt.prob} are
+  interfaces to Fortran-77 routines by Alan Genz, available from his web page; 
+  they makes use of some auxiliary functions whose authors are indicated
+  in the Fortran code itself. 
+  The routine \code{sadmvt} uses an adaptive  integration method. 
+  If \code{df=3}, a call to \code{pmt} activates a call to \code{ptriv.nt} 
+  which  is specific for the  trivariate case, and uses Genz's  Fortran
+  code \code{tvpack.f};  see Genz (2004) for the  background methodology.
+  A similar fact takes place when \code{df=2} with function \code{biv.nt.prob};
+  note however that the underlying Fortran code is taken from 
+  \code{mvtdstpack.f}, not from \code{tvpack.f}.
+  If \code{pmt} is called  with \code{d>3}, this is converted into
+  a suitable call to \code{sadmvt}.
   
   If \code{sqrt=NULL} (default value), the working of \code{rmt} involves 
   computation of a square root of \code{S} via the Cholesky decomposition.
@@ -83,9 +91,9 @@ biv.nt.prob(df, lower, upper, mean, S)
   of the scale matrix, in place of the Cholesky factor.
   
   For efficiency reasons, \code{rmt} does not perform checks on the supplied  
-  arguments.
-  
+  arguments.  
 }
+
 \value{
   \code{dmt} returns a vector of density values (possibly log-transformed);
   \code{pmt} and \code{sadmvt} return a single probability with 
@@ -94,19 +102,25 @@ biv.nt.prob(df, lower, upper, mean, S)
    \code{rmt} returns a matrix of \code{n} rows of random vectors
    }
 \references{
-  Genz, A.:  Fortran77 code in files \code{mvt.f} and \code{mvtdstpack.f}  
-  downloaded in 2005 and again 2007 from his webpage, 
-  whose URL as of 2020-04-28 is 
-  \url{http://www.math.wsu.edu/faculty/genz/software/software.html} 
+  Genz, A.:  Fortran-77 code in files \code{mvt.f}, \code{mvtdstpack.f}  
+  and code{tvpack}, downloaded in 2005 and again in 2007 from his webpage, 
+  whose URL as of 2020-06-01 is 
+  \url{http://www.math.wsu.edu/faculty/genz/software/software.html}
+  
+  Genz, A. (2004). 
+  Numerical computation of rectangular bivariate and trivariate normal
+  and \emph{t} probabilities.
+  \emph{Statistics and Computing} 14, 251-260.
   
   Dunnett, C.W. and Sobel, M. (1954).
   A bivariate generalization of Student's \emph{t}-distribution with tables  
   for certain special cases. \emph{Biometrika} 41, 153--169.
 }
 \author{
-  Fortran code of \code{SADMVT} and most auxiliary functions by Alan Genz,
+  Fortran code of \code{SADMVT} and most auxiliary functions by Alan Genz;
   some additional auxiliary functions by people referred to within his 
-  program; interface to \R and additional \R code by Adelchi Azzalini.}
+  program; interface to \R and additional \R code (for \code{dmt}, \code{rmt}
+  etc.) by Adelchi Azzalini.}
 
 \note{ 
 The attributes \code{error} and \code{status} of the probability returned 
@@ -138,5 +152,4 @@ c(p0, p1, p2, p0-p1, p0-p2)
 }
 \keyword{distribution}
 \keyword{multivariate}
-
-
+\concept{multivariate t distribution}

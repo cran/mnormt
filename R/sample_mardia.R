@@ -19,7 +19,7 @@ sample_Mardia_measures <- function(data, correct=FALSE)
   g2 <- (n-1)*((n+1)*b2 - (n-1)*d*(d+2))/((n-2)*(n-3))       # eq.(2.11)
   k <- (d+1)*(n+1)*(n+3)/(n*((n+1)*(d+1)-6))                 # eq.(5.5)
   p.b1 <- 1 - pchisq(b1*n*k/6, df=d*(d+1)*(d+2)/6)
-  p.b2 <- if((n-d-1) > 0) {                                 # next few lines \
+  p.b2 <- if((n-d-1) > 0) {                                  # next few lines \
     r <- sqrt((n+3)*(n+5)/(n-d-1))                           # use eq.(5.6)  
     std.b2 <- ((n+1)*b2-d*(d+2)*(n-1))*r/((8*d*(d+2)*(n-3)*(n-d-1)))
     p.b2 <- 2*pnorm(-abs(std.b2))

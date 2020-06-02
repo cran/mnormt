@@ -1,12 +1,12 @@
-\name{dmnorm}
+\name{mnorm}
 \alias{dmnorm}
 \alias{pmnorm}
 \alias{rmnorm}
 \alias{sadmvn}
-\title{Multivariate normal distribution}
+\title{The multivariate normal distribution}
 \description{
   The probability density function, the distribution function and random
-  number generation for the multivariate normal (Gaussian)  distribution
+  number generation for the multivariate normal (Gaussian) distribution
 }
 \usage{
 dmnorm(x, mean = rep(0, d), varcov, log = FALSE) 
@@ -18,7 +18,8 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000*d, abseps = 1e-06, releps = 0)
   \item{x}{either a vector of length \code{d} or a matrix with \code{d}
     columns, where \code{d=ncol(varcov)}, representing
     the coordinates of the point(s) where the density must
-    be evaluated;  for \code{pmnorm},  \code{d} cannot exceed \code{20}.}
+    be evaluated.}
+    
   \item{mean}{either a vector of length \code{d}, representing the mean value,
     or (except for \code{rmnorm}) a matrix whose rows represent different 
     mean vectors; in the matrix case, only allowed for \code{dmnorm} and 
@@ -35,10 +36,10 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000*d, abseps = 1e-06, releps = 0)
   \item{log}{a logical value (default value is \code{FALSE});
     if \code{TRUE}, the logarithm of the density is computed.}
     
-  \item{...}{parameters passed to \code{sadmvn}, 
+  \item{...}{arguments passed to \code{sadmvn}, 
     among \code{maxpts}, \code{abseps}, \code{releps}.}
     
-  \item{n}{the number of random  vectors to be generated.}
+  \item{n}{the number of (pseudo) random  vectors to be generated.}
   
   \item{lower}{a numeric vector of lower integration limits of 
     the density function; must be of maximal length \code{20}; 
@@ -53,12 +54,16 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000*d, abseps = 1e-06, releps = 0)
   \item{abseps}{absolute error tolerance (default value: \code{1e-6}).}
   \item{releps}{relative error tolerance (default value: \code{0}).}
 }
-\details{
+
+
+\details{The dimension \code{d} cannot exceed \code{20} for \code{pmnorm}.
+
   The function \code{pmnorm} works by making a suitable call to
-  \code{sadmvn} if \code{d>2}, or to \code{biv.nt.prob} if \code{d=2}, 
+  \code{sadmvn} if \code{d>3},  or to \code{ptriv.nt} if \code{d=3},
+  or to \code{biv.nt.prob} if \code{d=2}, 
   or to \code{pnorm} if \code{d=1}.
   If \code{d>2}, function \code{sadmvn} is an interface to a Fortran-77 
-  routine with  the same name written  by Alan Genz, available from his web page,
+  routine with the same name written  by Alan Genz, available from his web page,
   which works using an adaptive integration method.  
   This Fortran-77 routine makes uses of some auxiliary functions 
   whose authors are documented in the code. 
@@ -116,7 +121,8 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000*d, abseps = 1e-06, releps = 0)
 \author{
   Fortran code of \code{SADMVN} and most auxiliary functions by Alan Genz,
   some additional auxiliary functions by people referred to within his 
-  program.  Interface to \R and additional \R code by Adelchi Azzalini}
+  program.  Interface to \R and additional \R code (for \code{dmnormt},
+  \code{rmnormt}, etc.)  by Adelchi Azzalini.}
 
 \note{ 
 The attributes \code{error} and \code{status} of the probability
@@ -126,7 +132,7 @@ If this is not the case, re-run the function with a higher value of
 \code{maxpts}
 }
 \seealso{\code{\link[stats:Normal]{dnorm}}, \code{\link{dmt}}, 
-         \code{\link{biv.nt.prob}}}
+         \code{\link{biv.nt.prob}}, \code{\link{ptriv.nt}}}
 \examples{
 x <- seq(-2, 4, length=21)
 y <- cos(2*x) + 10
@@ -159,5 +165,5 @@ p2 <- pmnorm(0, 1, 3^2)
 }
 \keyword{distribution}
 \keyword{multivariate}
-
+\concept{multivariate normal distribution}
 

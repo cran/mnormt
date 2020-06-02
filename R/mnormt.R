@@ -35,8 +35,11 @@ pmnorm <- function(x, mean=rep(0, d), varcov, ...) {
   if(d == 1) p <- as.vector(pnorm(x, mean, sqrt(varcov))) else {
     pv <- numeric(n)
     for (j in 1:n) p <- pv[j] <- if(d == 2)
-           biv.nt.prob(Inf, lower=rep(-Inf, 2), upper=x[j,], mean[j,], varcov)   
-      else sadmvn(lower=rep(-Inf, d), upper=x[j,], mean[j,], varcov, ...) 
+        biv.nt.prob(Inf, lower=rep(-Inf, 2), upper=x[j,], mean[j,], varcov)   
+      else if(d == 3) 
+        ptriv.nt(Inf, x=x[j,], mean[j,], varcov)
+      else     
+        sadmvn(lower=rep(-Inf, d), upper=x[j,], mean[j,], varcov, ...) 
     if(n > 1) p <- pv 
     }
   return(p)  
@@ -137,8 +140,11 @@ pmt <- function(x, mean=rep(0, d), S, df=Inf, ...){
   if(d == 1) p <- as.vector(pt((x-mean)/sqrt(S), df=df)) else {
     pv <- numeric(n)
     for (j in 1:n) p <- pv[j] <- if(d == 2)
-           biv.nt.prob(df, lower=rep(-Inf, 2), upper=x[j,], mean[j,], S)   
-      else sadmvt(df, lower=rep(-Inf, d), upper=x[j,], mean[j,], S, ...)
+         biv.nt.prob(df, lower=rep(-Inf, 2), upper=x[j,], mean[j,], S)  
+      else if(d == 3)
+        ptriv.nt(df, x=x[j,], mean=mean[j,], S)      
+      else 
+        sadmvt(df, lower=rep(-Inf, d), upper=x[j,], mean[j,], S, ...)
      if(n > 1) p <- pv    
      }
   return(p)  
@@ -200,7 +206,6 @@ sadmvt <- function(df, lower, upper, mean, S,
 biv.nt.prob <- function(df, lower, upper, mean, S){
   if(any(dim(S) != c(2,2))) stop("dimensions mismatch")
   if(length(mean) != 2) stop("dimensions mismatch") 
-  # if(df == Inf) nu <- 0
   if(round(df) != df) warning("non integer df is rounded to integer") 
   nu <- if(df < Inf) as.integer(round(df)) else 0
   sd <- sqrt(diag(S))
@@ -226,7 +231,31 @@ biv.nt.prob <- function(df, lower, upper, mean, S){
   a <- .Fortran("smvbvt", prob, nu, lower, upper, infin, rho, PACKAGE="mnormt")
   return(a[[1]])
   } 
- 
+
+ptriv.nt <- function(df, x, mean, S){
+  if(any(dim(S) != c(3,3))) stop("dimensions mismatch")
+  if(length(mean) != 3) stop("dimensions mismatch") 
+  if(round(df) != df) warning("non integer df is rounded to integer") 
+  nu <- if(df < Inf) as.integer(round(df)) else 0
+  if(any(x == -Inf)) return(0)
+  ok <- !is.infinite(x)
+  p <- if(sum(ok) == 1) 
+         pt(df, (x[ok]-mean[ok])/sqrt(S[ok,ok])) 
+    else if(sum(ok) == 2) 
+         biv.nt.prob(nu, rep(2 -Inf), x[ok], mean[ok], S[ok,ok])
+    else {     
+      sd <- sqrt(diag(S))
+      h <- as.double((x-mean)/sd)
+      cor <- cov2cor(S)
+      rho  <- as.double(c(cor[2,1], cor[3,1], cor[2,3]))
+      prob <- as.double(0)
+      epsi <- as.double(1e-14)
+      a <- .Fortran("stvtl", prob, nu, h, rho, epsi, PACKAGE="mnormt")
+      p <- a[[1]]
+      }
+    return(p) 
+  }  
+
 pd.solve <- function(x, silent=FALSE, log.det=FALSE)
 {
   if(is.null(x)) return(NULL)
