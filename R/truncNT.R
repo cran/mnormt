@@ -24,7 +24,7 @@ dmtruncnorm <- function(x, mean, varcov, lower, upper, log= FALSE, ...) {
   if(!all(lower < upper)) stop("lower<upper componentwise is required")
   ok <- apply((t(x)-lower)>0 & (upper-t(x))>0, 2, all)
   pdf <- rep(0, NROW(x))
-  if(sum(ok) > 1) {
+  if(sum(ok) > 0) {
     prob <- sadmvn(lower, upper, mean, varcov, ...)
     tmp <- dmnorm(x[ok,], mean, varcov, log=log)
     pdf[ok] <- if(log) tmp - log(prob) else tmp/prob
@@ -68,6 +68,7 @@ mom.mtruncnorm <- function(powers=4, mean, varcov, lower, upper, cum=TRUE, ...)
   M <- recintab(kappa=powers, a=lower, b=upper, mean, varcov, ...)
   mom <- M/M[1]
   out <- list(mom=mom)
+  # if(mom[1] != 1) { warning("mom[1] != 1"); return(c(out, NA)) }
   cum <- if(cum) mom2cum(mom) else NULL
   return(c(out, cum))
 }
@@ -82,24 +83,59 @@ mom2cum <- function(mom)
      subs.char <- paste(as.character(ind), collapse=",")
      eval(str2expression(paste(array, "[", subs.char, "]", sep="")))
      } 
-  powers <- dim(mom) - 1
+  if(is.na(mom[1])) return(list(cum=NA, message="mom[1] must be 1"))
+  if(mom[1] != 1) return(list(cum=NA, message="mom[1] must be 1"))  
+  if(is.vector(mom)) { # case d=1 treated separately
+    m <- mom[-1]
+    powers <- length(m)
+    cum <- cmom <- g1 <- g2 <- NULL
+    if(powers >= 1) {
+       cum <- m[1]
+       cmom <- 0
+       }
+    if(powers >= 2) {
+       cum <- c(cum, m[2] - m[1]^2)
+       if(cum[2] <= 0 ) warning("cum[2] <= 0")
+       cmom <- c(cmom, cum[2])
+       }
+    if(powers >= 3) {
+       cum <- c(cum, m[3] -3*m[1]*m[2] + 2*m[1]^3)
+       cmom <- c(cmom, cum[3])
+       g1 <- cum[3]/cum[2]^1.5
+       }
+    if(powers >= 4) {
+       cum <- c(cum, m[4] -3*m[2]^2 - 4*m[1]*m[3] + 12*m[1]^2*m[2] -6*m[1]^4)
+       cmom <- c(cmom, cum[4] + 3*cum[2]^2)
+       g2 <- cum[4]/cum[2]^2
+       }
+    out <- list(cum=cum, centr.mom=cmom, std.cum=c(gamma1=g1, gamma2=g2))
+    return(out)
+    } # end of case d=1
+  # now case d>1:
+  powers <- dim(mom) - 1  
   d <- length(powers)
   out <- list()
   if(all(powers >= 1)) {
     m1 <- numeric(d)
     for(i in 1:d)  m1[i] <- get.entry("mom", i, 1)
     out$cum1  <- m1
-   }   
+    }   
   if(all(powers >= 2)) {
     m2 <- matrix(0, d, d)            # moments of 2nd order
     for(i in 1:d) for(j in 1:d) 
       m2[i,j] <- if(i == j) 
         get.entry("mom", i, 2) else get.entry("mom", c(i, j), c(1,1))
     vcov <- cum2 <- (m2 - m1 %*% t(m1))
-    conc <- pd.solve(vcov, log.det=TRUE)
+    if(any(eigen(cum2, symmetric=TRUE, only.values=TRUE)$values <= 0))
+      warning("matrix 'cum2' not positive-definite")
+    conc <- pd.solve(vcov, silent=TRUE, log.det=TRUE)
     log.det <- attr(conc, "log.det")
     attr(conc, 'log.det') <- NULL
     out$order2 <- list(m2=m2, cum2=vcov, conc.matrix=conc, log.det.cum2=log.det)
+    if(is.null(conc)) { 
+      out$message <- "Warning: input array 'mom' appears problematic"  
+      return(out)
+      }  
     }
   if(all(powers >= 3)) {
     mom2 <- m2[cbind(1:d,1:d)]        # 2nd order marginal moments  
@@ -112,6 +148,7 @@ mom2cum <- function(mom)
          subs <- i
          val <- 3
          mom3[i] <- get.entry("mom", subs, val)
+         # next line uses (15.4.4) of Cramér (1946, p.175)
          cmom3[i] <- mom3[i] - 3*m1[i]*mom2[i] + 2*m1[i]^3
          }
       else {
@@ -151,6 +188,7 @@ mom2cum <- function(mom)
         val <- 4
         subs <- i
         mom4[i] <- get.entry("mom", subs, val)
+        # next line uses (15.4.4) of Cramér (1946, p.175)
         cmom4[i] <- mom4[i] - 4*m1[i]*mom3[i] + 6*m1[i]^2*mom2[i] - 3*m1[i]^4
        } 
       else { if(i==j & j==k | i==k & k==l | i==j & j==l | j==k & k==l) {
@@ -181,7 +219,7 @@ mom2cum <- function(mom)
         }}}}
       m4[i,j,k,l] <- get.entry("mom", subs, val)    
       }
-    # compute 4th-order cumulants using (2.7) of McCullagh (1987)
+    # compute 4th order cumulants using (2.7) of McCullagh (1987)
     cum4 <- array(NA, rep(d, 4))      
     for(i in 1:d) for (j in 1:d) for(k in 1:d) for(l in 1:d)  
       cum4[i,j,k,l] <- ( m4[i,j,k,l] 
@@ -245,7 +283,7 @@ else {
    for(i in 1:n) {
        kk <- kappa;
        kk[i] <- 0;
-       cp[i,] <-  c(1, cumprod(kk[1:n-1]+1));   
+       cp[i,] <-  c(1, cumprod(kk[1:(n-1)] + 1));   
        }
    G <- rep(0, pk1);
    H <- rep(0, pk1);
@@ -273,7 +311,7 @@ else {
    } 
 #
 #  Use recursion to obtain M(nu).
-   M[1] <- sadmvn(a, b, mu, S, ...)
+   M[1] <- sadmvn(a, b, mu, S, ...) 
    a[is.infinite(a)] <- 0;
    b[is.infinite(b)] <- 0;    
    cp1 <- t(cp[n,,drop=FALSE]);
@@ -313,7 +351,7 @@ dmtrunct <- function(x, mean, S, df, lower, upper, log= FALSE, ...) {
   if(!all(lower < upper)) stop("lower<upper is required")
   ok <- apply((t(x)-lower)>0 & (upper-t(x))>0, 2, all)
   pdf <- rep(0, NROW(x))
-  if(sum(ok) > 1) {
+  if(sum(ok) > 0) {
     prob <- sadmvt(df, lower, upper, mean, S, ...)
     tmp <- dmt(x[ok,], mean, S, df, log=log)
     pdf[ok] <- if(log) tmp - log(prob) else tmp/prob

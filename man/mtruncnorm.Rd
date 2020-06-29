@@ -56,7 +56,9 @@ in the package.}
 
 \author{Adelchi Azzalini}
  
-\seealso{  \code{\link[tmvnsim]{tmvnsim}} }
+\seealso{ \code{\link{sadmvn}} for regulating accuracy, 
+  \code{\link[tmvnsim]{tmvnsim}} for details on the underlying function 
+   generating random numbers   }
 
 \examples{
 m2 <- c(0.5, -1)

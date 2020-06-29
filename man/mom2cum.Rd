@@ -12,17 +12,19 @@ notably the Mardia's measures of multivariate skewness and kurtosis
 
 \arguments{
   \item{mom}{an array whose entries are assumed to represent moments of a
-             multivariate distribution; see \sQuote{Details} for additional
-             information.}
+             multivariate distribution; see \sQuote{Details} for an extended
+             description.}
 }
-\details{The structure of the input array \code{mom} is the one of the output
-produced by function \code{\link{recintab}}. For a \code{d}-dimensional
-random variable, \code{mom} is an \code{k}-fold \code{d}-dimensional array,
-where \code{k} is the highest order of moments being considered;
-see the documentation of \code{mom} for a more detailed description. 
+
+\details{The structure of the input array \code{mom} is of type \code{M/M[1]}
+where \code{M} represents the output from function \code{\link{recintab}}. 
+For a \code{d}-dimensional random variable, \code{mom} is a \code{k}-fold 
+\code{d}-dimensional array, where \code{k} is the highest order of moments 
+being considered;
+see the documentation of \code{recintab} for a more detailed description. 
 However, it is not necessary that \code{mom} originates from \code{recintab};
-the moments can refer to any distribution, as long as  \code{mom} 
-has the appropriate structure and content.
+the moments can refer to any distribution, as long as \code{mom} has the 
+appropriate structure and content.
 
 Also, it is not necessary that all entries of \code{mom} are there;
 values not required for the processing can be left as \code{NA}.
@@ -33,17 +35,29 @@ Conversion from moments to cumulants is performed by using formulae (2.7)
 of McCullagh (1987). See also \eqn{\rho_{23}^2} in his (2.15) and 
 \eqn{\rho_4} in (2.16) for computing the Mardia's (1970, 1974) measures of 
 multivariate skewness and kurtosis.
+
+In some cases,
+the function may report inconsistencies detected in the argument \code{mom}.
+A typical origin of this situation is in numerical inaccuracies of the 
+returned value of \code{\link{recintab}},
+as explained in more detail in its documentation.
+When detected, cases of these sort are flagged in the returned \code{$message} 
+string, and a warning message is issued.
+The absence of such string does not represent a guarantee of perfect input.
 }
+
 \value{
-A list with the following elements, provided moments of the required order are
+In the multivariate case, 
+a list with the following elements, provided moments of the required order are
 available, up to the maximal order 4. 
 \item{cum1}{the \code{d}-vector of first-order cumulants, 
-   AKA the expected value or the mean value; 
+   \acronym{AKA} the expected value or the mean value; 
    this will be there if \code{mom} contains all moments of order 1.}
 \item{order2}{a list with the following components: 
    \code{m2}, the \code{(d,d)} matrix of second order moments; 
    \code{cum2}, the \code{(d,d)} matrix of second order cumulants, 
-     AKA the variance-covariance matrix, the variance matrix, the covariance matrix; 
+     \acronym{AKA} the variance-covariance matrix, the variance matrix, 
+     the covariance matrix, the dispersion matrix; 
    \code{conc.matrix}, the concentration matrix, that is, the inverse of \code{cum2};
    \code{log.det.cum2}, the logarithm of the determinant of \code{cum2}.
    } % end order2
@@ -65,6 +79,17 @@ available, up to the maximal order 4.
    \code{gamma2.Mardia}, the Mardia measure of multivariate kurtosis, \eqn{\gamma_{2,d}};
    \code{beta2.Mardia}, the Mardia measure of multivariate kurtosis, \eqn{\beta_{2,d}}. 
    }% end order4
+\item{message}{possibly, a character string indicating that some inconsistency
+   has been detected in the argument \code{mom}; see \sQuote{Details}.}
+
+In the univariate case a list with elements:
+\item{cum}{a vector of cumulants,}
+\item{centr.mom}{a vector of central moments,}
+\item{std.cum}{a vector with the third and the fourth standardized cumulants
+   (when enough moments are available), representing 
+   common measures of skewness and kurtosis.}
+\item{message}{possibly, a character string indicating that some inconsistency
+   has been detected in the argument \code{mom}; see \sQuote{Details}.}   
 }
 
 
@@ -89,7 +114,7 @@ Chapman & Hall, London.
 a user does not need to call this function; \code{\link{mom.mtruncnorm}} 
 provides a more convenient interface for the same computations.
 The present function needs to be called only if the array \code{mom} 
-has been computed for the moments of some other distribution.}
+represents the moments of some other distribution.}
 
 \seealso{\code{\link{recintab}} }
 

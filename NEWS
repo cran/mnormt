@@ -1,10 +1,16 @@
 R package 'mnormt' history file
 -------------------------------
+2020-06-24: 2.0.1 
+  fixed a bug which effectively prevented using dmtruncnorm and dmtrunct with
+  an argument 'x' of vector type; various improvements in the documentation of
+  recintab and mom2cum.
+  
 2020-06-02: 2.0.0
-  support for the truncated versions of the normal and the t distributions is
-  introduced; functions recintab and mom2cum allow computation of corresponding
-  moments and cumulants; the latter function can also be used for obtaining 
-  the cumulants of any other distribution of which the moments are known.
+  support for the truncated versions of the multivariate normal and the t 
+  distributions is introduced; for the truncated normal distribution, 
+  functions recintab and mom2cum allow computation of corresponding moments 
+  and cumulants; the latter function can also be used for obtaining the 
+  cumulants of other distributions of which the moments are known.
 
 2020-04-29: 1.5-7 
   improved R coding of sadmvn and sadmvt, with increased use of biv.nt.prob; 

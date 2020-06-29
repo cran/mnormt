@@ -56,14 +56,15 @@ although for this case there exist known formulae to do the job.
 }
 
 \value{A list with the following components:
-  \item{mom}{an array with raw moments as produced by \code{recintab}; 
-      see its documentation for a description.}
-  \item{cum1}{the vector of first-order cumulants, AKA the expected value or
-      the mean value, which will be there  provided \code{cum=TRUE} and all 
-      elements of \code{powers} are not less than 1.}
+  \item{mom}{an array with raw moments as produced by \code{recintab},
+     followed by normalization; see its documentation for a description.}
+  \item{cum1}{the vector of first-order cumulants, 
+     \acronym{AKA} the expected value or  the mean value, 
+     which will be there  provided \code{cum=TRUE} and all 
+     elements of \code{powers} are not less than 1.}
   \item{order2, ...}{additional lists with higher order terms up to order 4;
-    these lists exist only when the available moments are of sufficiently high
-    order.  See \code{\link{mom2cum}} for a more detailed description.}
+     these lists only exist when the available moments are of sufficiently 
+     high order. See \code{\link{mom2cum}} for a more detailed description.}
 }
 
 \author{Adelchi Azzalini}
@@ -83,6 +84,15 @@ print(m$cum1)
 m <- mom.mtruncnorm(3, mu, Sigma, lower, upper)
 print(m$order3$gamma1.marginal)
 print(m$order3$gamma1.Mardia)
+#
+#--
+# Example 2 of Leppard & Tallis (1989, Appl.Stat. vol.38, p.547)
+truncp <- c(0, 1, 2)
+U <- c(0, 0, 0)
+V <- 0.5*(diag(3) + matrix(1, 3, 3))
+m <- mom.mtruncnorm(2, U, V, truncp)
+print(m$cum1, digits=9)
+print(m$order2$cum2, digits=9)
 }
 %----
 \keyword{distribution}

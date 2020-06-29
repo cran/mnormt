@@ -50,7 +50,7 @@ pmtrunct(x, mean, S, df, lower, upper, ...)
 \author{Adelchi Azzalini}
 
 % \note{%%  ~~further notes~~}
-% \seealso{%% ~~objects to See Also as \code{\link{help}}, ~~~}
+\seealso{ \code{\link{sadmvt}} for regulating accuracy}
 
 \examples{
 m2 <- c(0.5, -1)
