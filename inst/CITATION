@@ -10,13 +10,13 @@ citEntry(entry="manual",
    	           person("Adelchi", "Azzalini", role=c("aut", "cre")), 
 	           person("Alan", "Genz", role="aut", comment="Fortran code")),
          year         = substr(meta$Date, 1, 4),
-         url          = "http://azzalini.stat.unipd.it/SW/Pkg-mnormt",
+         url          = "http://azzalini.stat.unipd.it/SW/Pkg-mnormt/",
          
          textVersion = 
          paste("Azzalini, A. and Genz, A. (", substr(meta$Date, 1, 4), "). ",
              "The R package 'mnormt': ", 
 	         "The multivariate normal and 't' distributions ",
 	         "(version ", meta$Version, "). ",
-             "URL http://azzalini.stat.unipd.it/SW/Pkg-mnormt",
+             "URL http://azzalini.stat.unipd.it/SW/Pkg-mnormt/",
                sep="")
 )

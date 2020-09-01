@@ -1,5 +1,9 @@
 R package 'mnormt' history file
 -------------------------------
+
+2020-06-24: 2.0.1
+  R version requirement is reduced from 4.0.0 to 2.2.0
+
 2020-06-24: 2.0.1 
   fixed a bug which effectively prevented using dmtruncnorm and dmtrunct with
   an argument 'x' of vector type; various improvements in the documentation of
