@@ -40,7 +40,7 @@ see the references below; this code incorporates routines of other authors).
   \emph{Computing Science and Statistics}, \bold{25}, 400-405.
   
   Genz, A.:  Fortran code downloaded in 2006 from the author web page, 
-  located at \url{http://www.math.wsu.edu/faculty/genz/software/software.html},
+  located at \url{https://www.math.wsu.edu/faculty/genz/software/software.html},
   as of 2020-06-01.
    
 }

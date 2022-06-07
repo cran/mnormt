@@ -60,16 +60,12 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000*d, abseps = 1e-06, releps = 0)
 
   The function \code{pmnorm} works by making a suitable call to
   \code{sadmvn} if \code{d>3},  or to \code{ptriv.nt} if \code{d=3},
-  or to \code{biv.nt.prob} if \code{d=2}, 
-  or to \code{pnorm} if \code{d=1}.
-  If \code{d>2}, function \code{sadmvn} is an interface to a Fortran-77 
-  routine with the same name written  by Alan Genz, available from his web page,
-  which works using an adaptive integration method.  
-  This Fortran-77 routine makes uses of some auxiliary functions 
-  whose authors are documented in the code. 
-  If \code{d=2}, a call to \code{sadmvn} is translated into one to 
-  \code{biv.nt.prob}; if \code{d=1}, \code{pnorm} is used.   
-  
+  or to \code{biv.nt.prob} if \code{d=2},  or to \code{pnorm} if \code{d=1}.
+  The \R functions \code{sadmvn}, \code{ptriv.nt} and \code{biv.nt.prob} 
+  are, in essence,  interfaces to underlying Fortran-77 routines by Alan Genz;
+  see the references below. These routines use adaptive numerical quadrature
+  and other non-random type techniques.
+
   If \code{sqrt=NULL} (default value), the working of \code{rmnorm} involves 
   computation of a square root of \code{varcov} via the Cholesky decomposition.
   If a non-\code{NULL} value of \code{sqrt} is supplied, it  is  assumed 
@@ -91,8 +87,7 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000*d, abseps = 1e-06, releps = 0)
   two calls to \code{rmnorm} are made with the same arguments except that one
   generates \code{n1} vectors and the other \code{n2} vectors, with
   \code{n1<n2}, then the \code{n1} vectors of the first call coincide with the
-  initial \code{n2} vectors of the second call.
-  
+  initial \code{n2} vectors of the second call.  
   }
 
 \value{
@@ -101,9 +96,10 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000*d, abseps = 1e-06, releps = 0)
   on the accuracy in case \code{x}  is a vector;
    \code{sadmvn} return a single probability with 
    attributes giving details on the achieved accuracy;
-  \code{rmnorm} returns a matrix of \code{n} rows of random vectors
-  or a vector in case \code{n=1}.
+  \code{rmnorm} returns a matrix of \code{n} rows of random vectors,
+  or a vector in case \code{n=1} or \code{d=1}.
 }
+
 \references{
   Genz, A. (1992).
   Numerical Computation of multivariate normal probabilities.
@@ -115,13 +111,14 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000*d, abseps = 1e-06, releps = 0)
   
   Genz, A.:  Fortran77 code downloaded in 2005 and again in 2007 
   from his web-page,  whose URL as of 2020-04-28 is 
-  \url{http://www.math.wsu.edu/faculty/genz/software/software.html}
+  \url{https://www.math.wsu.edu/faculty/genz/software/software.html}
   }
 
 \author{
-  Fortran code of \code{SADMVN} and most auxiliary functions by Alan Genz,
-  some additional auxiliary functions by people referred to within his 
-  program.  Interface to \R and additional \R code (for \code{dmnormt},
+  \acronym{FORTRAN-77} code of \code{SADMVN}, package \code{mvtdstpack.f}, 
+  package \code{tvpack}  and most auxiliary functions by Alan Genz; 
+  some additional auxiliary functions by people referred to within his programs;  
+  interface to \R and additional \R code (for \code{dmnormt}, 
   \code{rmnormt}, etc.)  by Adelchi Azzalini.}
 
 \note{ 
@@ -132,7 +129,8 @@ If this is not the case, re-run the function with a higher value of
 \code{maxpts}
 }
 \seealso{\code{\link[stats:Normal]{dnorm}}, \code{\link{dmt}}, 
-         \code{\link{biv.nt.prob}}, \code{\link{ptriv.nt}}}
+         \code{\link{biv.nt.prob}}, \code{\link{ptriv.nt}},
+         \code{\link{plot_fxy}} for plotting examples}
 \examples{
 x <- seq(-2, 4, length=21)
 y <- cos(2*x) + 10

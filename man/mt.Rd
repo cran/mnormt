@@ -99,13 +99,15 @@ ptriv.nt(df, x, mean, S)
   \code{pmt} and \code{sadmvt} return a single probability with 
    attributes giving details on the achieved accuracy,  provided \code{x} 
    of \code{pmnorm} is a vector;
-   \code{rmt} returns a matrix of \code{n} rows of random vectors
-   }
+   \code{rmt} returns a matrix of \code{n} rows of random vectors,
+   or a vector in case \code{n=1} or \code{d=1}.
+}
+
 \references{
   Genz, A.:  Fortran-77 code in files \code{mvt.f}, \code{mvtdstpack.f}  
   and code{tvpack}, downloaded in 2005 and again in 2007 from his webpage, 
   whose URL as of 2020-06-01 is 
-  \url{http://www.math.wsu.edu/faculty/genz/software/software.html}
+  \url{https://www.math.wsu.edu/faculty/genz/software/software.html}
   
   Genz, A. (2004). 
   Numerical computation of rectangular bivariate and trivariate normal
@@ -117,9 +119,10 @@ ptriv.nt(df, x, mean, S)
   for certain special cases. \emph{Biometrika} 41, 153--169.
 }
 \author{
-  Fortran code of \code{SADMVT} and most auxiliary functions by Alan Genz;
+  \acronym{FORTRAN-77} code of \code{SADMVT}, \code{MVTDSTPACK}, \code{TVPACK}
+  and many  auxiliary functions by Alan Genz;
   some additional auxiliary functions by people referred to within his 
-  program; interface to \R and additional \R code (for \code{dmt}, \code{rmt}
+  programs; interface to \R and additional \R code (for \code{dmt}, \code{rmt}
   etc.) by Adelchi Azzalini.}
 
 \note{ 
@@ -131,7 +134,8 @@ If this is not the case, re-run the function with a higher value of
 \code{maxpts}.
 }
 \seealso{\code{\link[stats:TDist]{dt}}, 
-       \code{\link{rmnorm}} for use of argument \code{sqrt}}
+       \code{\link{rmnorm}} for use of argument \code{sqrt},
+       \code{\link{plot_fxy}} for plotting examples}
 \examples{
 x <- seq(-2,4,length=21)
 y <- 2*x+10

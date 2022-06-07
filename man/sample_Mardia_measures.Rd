@@ -32,7 +32,7 @@ required for meaningful statistical work.
 The  sample variance matrix \eqn{S} appearing  in (2.2) and (2.4) 
 is computed here (in the dafault setting) with the \eqn{n} denominator, 
 at variance from the commonly employed \code{n-1} denominator. 
-With this definition of \eqn{S}, one can reproduce the numerical outcomes 
+With this definition of \eqn{S}, one obtains the same numerical outcome 
 of the example on p.127 of Mardia (1974).
 
 The approximate observed significance levels for testing normality, 
@@ -67,13 +67,8 @@ Mardia, K. V. (1974).
 Adelchi Azzalini
 }
 
-%\note{%%  ~~further notes~~}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-% \seealso{%% ~~objects to See Also as \code{\link{help}}, ~~~}
-
 \examples{
+set.seed(1)
 x <- rmnorm(100, mean=1:3, varcov=toeplitz(1/(1:3)))
 sample_Mardia_measures(x)
 }

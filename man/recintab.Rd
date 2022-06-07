@@ -37,8 +37,8 @@ on 2020-04-23.
 The function returns an array, \code{M} say, whose entries represent integrals 
 of type  \eqn{\int_a^b x^\kappa f(x) dx}, where \eqn{f(x)} denotes the 
 \eqn{d}-dimensional normal density function. 
-Typically, interest is in the transformed array \code{M/M[1]} whose entries 
-represent moments of the truncated distribution.
+Typically, interest is in the scaled array \code{M/M[1]} whose entries 
+represent the moments of the truncated distribution.
   
 The algorithm is based on a recursion starting from the integral of the normal 
 distribution over the specified hyper-rectangle. This integral is evaluated 

@@ -1,57 +1,100 @@
 # Code providing support for the truncated normal and "t" distributions.
-# Started April 2020.
+# A.Azzalini, 2020-2022.
 #--------------------------------------------------------------------------
-
-rmtruncnorm <- function(n, mean, varcov, lower, upper) {
-  # a wrapper of tmvnsim::tmvnsim to allow use of a consistent arguments set
-  d <- if(is.matrix(varcov)) ncol(varcov) else 1
-  if(missing(lower)) lower <- rep(-Inf, d)
-  if(missing(upper)) upper <- rep(Inf, d)
-  tmvnsim(n, d, lower, upper, rep(FALSE, d), mean, varcov)$samp
-  } 
 
 dmtruncnorm <- function(x, mean, varcov, lower, upper, log= FALSE, ...) {
   d <- if(is.matrix(varcov)) ncol(varcov) else 1
+  if(missing(lower)) lower <- rep(-Inf,d)
+  if(missing(upper)) upper <- rep(Inf,d)
+  if(length(lower) != d | length(upper) != d) stop("dimension mismatch")
+  if(!all(lower < upper)) stop("lower<upper is required (componentwise)")         
+  if(d==1) {
+    p.Int <- diff(pnorm(c(lower, upper), mean, sqrt(varcov)))
+    pdf <- rep(0, length(c(x)))
+    inside <- (x>lower & x<upper)
+    pdf[!inside] <- if(log) -Inf else 0
+    pdf.Int <- dnorm(x[inside], mean, sqrt(varcov), log=log)
+    pdf[inside] <- if(log) {pdf.Int -log(p.Int)} else {pdf.Int/p.Int}
+    return(pdf)
+    }
   if(d > 20) stop("the maximal dimension is 20")
   x <- if (is.vector(x))  t(matrix(x))   else data.matrix(x)
   if(ncol(x) != d)  stop("mismatch of the dimensions of 'x' and 'varcov'")
   if(is.matrix(mean)) {
     if((nrow(x) != nrow(mean)) || (ncol(mean) != d)) 
-      stop("mismatch of dimensions of 'x' and 'mean'")}
-  if(missing(lower)) lower <- rep(-Inf,d)
-  if(missing(upper)) upper <- rep(Inf,d)
-  if(length(lower) != d | length(upper) != d) stop("dimension mismatch")            
-  if(!all(lower < upper)) stop("lower<upper componentwise is required")
+      stop("mismatch of dimensions of 'x' and 'mean'") }
   ok <- apply((t(x)-lower)>0 & (upper-t(x))>0, 2, all)
   pdf <- rep(0, NROW(x))
   if(sum(ok) > 0) {
     prob <- sadmvn(lower, upper, mean, varcov, ...)
     tmp <- dmnorm(x[ok,], mean, varcov, log=log)
-    pdf[ok] <- if(log) tmp - log(prob) else tmp/prob
+    pdf[ok] <- if(log) {tmp - log(prob)} else {tmp/prob}
     }
   return(pdf)
-  }
-
+}
 
 pmtruncnorm <- function(x, mean, varcov, lower, upper, ...) {
   d <- if(is.matrix(varcov)) ncol(varcov) else 1
+  if(missing(lower)) lower <- rep(-Inf,d)
+  if(missing(upper)) upper <- rep(Inf,d)
+  if(length(lower) != d | length(upper) != d) stop("dimension mismatch")
+  if(!all(lower < upper)) stop("lower<upper is required (componentwise)")         
+  if(d==1) {
+    pL <- pnorm(c(lower, upper), mean, sqrt(varcov))
+    p <- rep(0, length(c(x)))
+    p <- replace(p, x >= upper, 1)
+    inside <- (x>lower & x<upper)
+    x0 <- x[inside]
+    p[inside] <- (pnorm(x0, mean, sqrt(varcov)) - pL[1])/diff(pL)
+    return(p)
+    }
   if(d > 20) stop("the maximal dimension is 20")
   x <- if (is.vector(x))  t(matrix(x))     else data.matrix(x)
   if (ncol(x) != d) stop("mismatch of dimensions of 'x' and 'varcov'")
   if (is.matrix(mean)) {
         if ((nrow(x) != nrow(mean)) || (ncol(mean) != d)) 
             stop("mismatch of dimensions of 'x' and 'mean'") }
-  if(missing(lower)) lower <- rep(-Inf,d)
-  if(missing(upper)) upper <- rep(Inf,d)
-  if(length(lower) != d | length(upper) != d) stop("dimension mismatch")            
-  if(!all(lower < upper)) stop("lower<upper componentwise is required")
   n <- NROW(x)  
   p <- numeric(n)
   for(i in 1:n)  p[i] <- if(any(x[i,] < lower)) 0 else 
      sadmvn(lower, pmin(x[i,], upper), mean, varcov)
   return(p/sadmvn(lower, upper, mean, varcov, ...))
-  }  
+}  
+
+
+rmtruncnorm <- function(n, mean, varcov, lower, upper, start, burnin=5, thinning=1) {
+  d <- as.integer(if(is.matrix(varcov)) ncol(varcov) else 1)
+  if(missing(lower)) lower <- rep(-Inf, d)
+  if(missing(upper)) upper <- rep(Inf, d)
+  if(!all(c(length(mean), length(lower), length(upper)) == rep(d,3))) 
+    stop("dimension mismatch")
+  if(!all(upper>lower)) stop("upper>lower is required")
+  if(d == 1) {
+      sigma <- c(sqrt(varcov))
+      p1 <- pnorm((lower - mean)/sigma)
+      p2 <- pnorm((upper - mean)/sigma)
+      u <- runif(n)
+      return(mean + sigma * qnorm(p1 + u*(p2-p1)))
+    }
+  if(missing(start)) start <- 
+    mom.mtruncnorm(powers=1, mean, varcov, lower, upper, cum=TRUE)$cum1
+  regr <- matrix(0, d, d-1)
+  sd_c <- numeric(d)
+  for(j in 1:d) { 
+    r <- c(varcov[j, -j, drop=FALSE] %*% solve(varcov[-j, -j, drop=FALSE]))
+    regr[j,] <- r
+    sd_c[j] <- sqrt(varcov[j,j] - sum(r * varcov[-j, j]))
+  }
+  nplus<- as.integer(burnin + n * thinning)
+  x <- matrix(0, nplus, d)
+  a <- .Fortran("rtmng", nplus, d, mean, regr, sd_c, lower, upper, x, start, 
+                NAOK=TRUE, PACKAGE="mnormt")
+  x <- a[[8]]
+  x[burnin+(1:n)*thinning, , drop=TRUE]
+}
+
 #------------------
+
 mom.mtruncnorm <- function(powers=4, mean, varcov, lower, upper, cum=TRUE, ...)
 {
   d <- if(is.matrix(varcov)) ncol(varcov) else 1
@@ -73,8 +116,8 @@ mom.mtruncnorm <- function(powers=4, mean, varcov, lower, upper, cum=TRUE, ...)
   return(c(out, cum))
 }
 
-mom2cum <- function(mom)
-{# convert array of multivariate moments to cumulants, up to 4th order maximum
+mom2cum <- function(mom){
+# convert array of multivariate moments to cumulants, up to 4th order maximum
   get.entry <- function(array, subs, val) {
      # get entries with subscripts 'subs' equal to 'val' of 'array' (char)
      x <- get(array)
@@ -311,7 +354,7 @@ else {
    } 
 #
 #  Use recursion to obtain M(nu).
-   M[1] <- sadmvn(a, b, mu, S, ...) 
+   M[1] <- if(n < 3) biv.nt.prob(Inf, a, b, mu, S) else sadmvn(a, b, mu, S, ...) 
    a[is.infinite(a)] <- 0;
    b[is.infinite(b)] <- 0;    
    cp1 <- t(cp[n,,drop=FALSE]);
@@ -332,7 +375,7 @@ else {
         }
       }
   }      
-return(M) 
+  return(M) 
 }
 #--------------------------------------------
 # multivariate truncated t distribution
@@ -357,7 +400,7 @@ dmtrunct <- function(x, mean, S, df, lower, upper, log= FALSE, ...) {
     pdf[ok] <- if(log) tmp - log(prob) else tmp/prob
     }
   return(pdf)
-  }
+}
 
 pmtrunct <- function(x, mean, S, df, lower, upper, ...) {
   if(df == Inf)  return(pmtruncnorm(x, mean, S, log = log))
@@ -377,4 +420,5 @@ pmtrunct <- function(x, mean, S, df, lower, upper, ...) {
   for(i in 1:n)  p[i] <- if(any(x[i,] < lower)) 0 else 
      sadmvt(df, lower, pmin(x[i,], upper), mean, S, ...)
   return(p/sadmvt(df,lower, upper, mean, S, ...))
-  }  
+}  
+
