@@ -7,8 +7,8 @@
 \alias{ptriv.nt}
 \title{The multivariate Student's \emph{t} distribution}
 \description{
-  The probability density function, the distribution function and random
-  number generation for the multivariate  Student's \emph{t}  distribution
+  The probability density function, the distribution function and random number 
+  generation for a \code{d}-dimensional Student's \emph{t} random variable.
 }
 \usage{
 dmt(x, mean = rep(0, d), S, df=Inf, log = FALSE) 
@@ -19,18 +19,18 @@ biv.nt.prob(df, lower, upper, mean, S)
 ptriv.nt(df, x, mean, S)
 }
 \arguments{
-  \item{x}{ either a vector of length \code{d} 
-     or (for \code{dmt} and \code{pmt}) 
-     a matrix with \code{d} columns, where \code{d=ncol(S)}, giving
-     the coordinates of the point(s) where the density must be evaluated.}
+  \item{x}{ either a vector of length \code{d} or (for \code{dmt} and \code{pmt}) 
+     a matrix with \code{d} columns representing the coordinates of the 
+     point(s) where the density must be evaluated; see also \sQuote{Details}.}
   \item{mean}{either a vector of length \code{d}, representing the location
      parameter (equal to the mean vector when \code{df>1}),  
      or (for \code{dmt} and \code{pmt}) a matrix 
      whose rows represent different mean vectors; 
      in the matrix case, its dimensions must match those of \code{x}.}
-  \item{S}{a symmetric positive-definite matrix representing the 
-     scale matrix of the distribution, such that \code{S*df/(df-2)} is
-     the variance-covariance matrix  when \code{df>2};  a vector of
+  \item{S}{a symmetric positive definite matrix with dimensions \code{(d,d)} 
+     representing the  scale matrix of the distribution, 
+     such that \code{S*df/(df-2)} is  the variance-covariance matrix 
+      when \code{df>2};  a vector of
      length \code{1} is also allowed (in this case, \code{d=1} is set).}
   \item{df}{the degrees of freedom.  
     For \code{rmt}, it must be a positive real value or \code{Inf}. 
@@ -60,10 +60,12 @@ ptriv.nt(df, x, mean, S)
 }
 
 
-\details{The dimension \code{d} cannot exceed \code{20} for \code{pmt}.
+\details{
+  The dimension \code{d} cannot exceed \code{20} for \code{pmt} and 
+  \code{sadmvt}. If this threshold is exceeded, \code{NA} is returned.
 
   The functions \code{sadmvt}, \code{ptriv.mt} and \code{biv.nt.prob} are
-  interfaces to Fortran-77 routines by Alan Genz, available from his web page; 
+  interfaces to Fortran 77 routines by Alan Genz, available from his web page; 
   they makes use of some auxiliary functions whose authors are indicated
   in the Fortran code itself. 
   The routine \code{sadmvt} uses an adaptive  integration method. 
@@ -104,7 +106,7 @@ ptriv.nt(df, x, mean, S)
 }
 
 \references{
-  Genz, A.:  Fortran-77 code in files \code{mvt.f}, \code{mvtdstpack.f}  
+  Genz, A.:  Fortran 77 code in files \code{mvt.f}, \code{mvtdstpack.f}  
   and code{tvpack}, downloaded in 2005 and again in 2007 from his webpage, 
   whose URL as of 2020-06-01 is 
   \url{https://www.math.wsu.edu/faculty/genz/software/software.html}
@@ -119,7 +121,7 @@ ptriv.nt(df, x, mean, S)
   for certain special cases. \emph{Biometrika} 41, 153--169.
 }
 \author{
-  \acronym{FORTRAN-77} code of \code{SADMVT}, \code{MVTDSTPACK}, \code{TVPACK}
+  \acronym{FORTRAN 77} code of \code{SADMVT}, \code{MVTDSTPACK}, \code{TVPACK}
   and many  auxiliary functions by Alan Genz;
   some additional auxiliary functions by people referred to within his 
   programs; interface to \R and additional \R code (for \code{dmt}, \code{rmt}

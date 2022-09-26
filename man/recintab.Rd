@@ -27,6 +27,9 @@ recintab(kappa, a, b, mu, S, ...)
   \item{\dots}{parameters passed to \code{sadmvn}; see the \sQuote{Details}. }
 }
 \details{
+The maximal dimension of the multivariate normal variable is 20.
+If this threshold is exceeded \code{NA}s are returned. 
+
 This function is the \R translation of the Matlab function with the same name
 belonging to the package \code{ftnorm}, 
 which is associated to the paper of Kan and Robotti (2017).

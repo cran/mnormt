@@ -17,9 +17,9 @@ dmtruncnorm <- function(x, mean, varcov, lower, upper, log= FALSE, ...) {
     pdf[inside] <- if(log) {pdf.Int -log(p.Int)} else {pdf.Int/p.Int}
     return(pdf)
     }
-  if(d > 20) stop("the maximal dimension is 20")
   x <- if (is.vector(x))  t(matrix(x))   else data.matrix(x)
   if(ncol(x) != d)  stop("mismatch of the dimensions of 'x' and 'varcov'")
+  if(d > 20) return(rep(NA, NROW(x)))
   if(is.matrix(mean)) {
     if((nrow(x) != nrow(mean)) || (ncol(mean) != d)) 
       stop("mismatch of dimensions of 'x' and 'mean'") }
@@ -48,8 +48,8 @@ pmtruncnorm <- function(x, mean, varcov, lower, upper, ...) {
     p[inside] <- (pnorm(x0, mean, sqrt(varcov)) - pL[1])/diff(pL)
     return(p)
     }
-  if(d > 20) stop("the maximal dimension is 20")
   x <- if (is.vector(x))  t(matrix(x))     else data.matrix(x)
+  if(d > 20) return(rep(NA, NROW(x)))
   if (ncol(x) != d) stop("mismatch of dimensions of 'x' and 'varcov'")
   if (is.matrix(mean)) {
         if ((nrow(x) != nrow(mean)) || (ncol(mean) != d)) 
@@ -98,7 +98,7 @@ rmtruncnorm <- function(n, mean, varcov, lower, upper, start, burnin=5, thinning
 mom.mtruncnorm <- function(powers=4, mean, varcov, lower, upper, cum=TRUE, ...)
 {
   d <- if(is.matrix(varcov)) ncol(varcov) else 1
-  if(d > 20) stop("maximal dimension is 20")
+  if(d > 20) return(NA) # stop("maximal dimension is 20")
   if(any(powers < 0) | any(powers != round(powers)))
     stop("'powers' must be non-negative integers")
   if(length(powers) == 1) powers <- rep(powers, d)  
@@ -385,6 +385,7 @@ dmtrunct <- function(x, mean, S, df, lower, upper, log= FALSE, ...) {
   d <- if(is.matrix(S)) ncol(S) else 1
   x <- if (is.vector(x))  t(matrix(x))  else data.matrix(x)
   if(ncol(x) != d) stop("mismatch of dimensions of 'x' and 'S'")
+  if(d > 20) return(rep(NA, NROW(x))) # stop("maximal dimension is 20")
   if(is.matrix(mean)) {
     if((nrow(x) != nrow(mean)) || (ncol(mean) != d)) 
       stop("mismatch of dimensions of 'x' and 'mean'")}
@@ -405,8 +406,8 @@ dmtrunct <- function(x, mean, S, df, lower, upper, log= FALSE, ...) {
 pmtrunct <- function(x, mean, S, df, lower, upper, ...) {
   if(df == Inf)  return(pmtruncnorm(x, mean, S, log = log))
   d <- if(is.matrix(S)) ncol(S) else 1
-  if(d > 20) stop("maximal dimension is 20")
   x <- if (is.vector(x))  t(matrix(x))  else data.matrix(x)
+  if(d > 20) return(rep(NA, NROW(x))) # stop("maximal dimension is 20")
   if (ncol(x) != d) stop("mismatch of dimensions of 'x' and 'S'")
   if (is.matrix(mean)) {
         if ((nrow(x) != nrow(mean)) || (ncol(mean) != d)) 

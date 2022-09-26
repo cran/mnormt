@@ -34,12 +34,15 @@ pmnorm <- function(x, mean=rep(0, d), varcov, ...) {
   if(is.vector(mean)) mean <- outer(rep(1, n), as.vector(matrix(mean,d)))
   if(d == 1) p <- as.vector(pnorm(x, mean, sqrt(varcov))) else {
     pv <- numeric(n)
-    for (j in 1:n) p <- pv[j] <- if(d == 2)
-        biv.nt.prob(Inf, lower=rep(-Inf, 2), upper=x[j,], mean[j,], varcov)   
-      else if(d == 3) 
-        ptriv.nt(Inf, x=x[j,], mean[j,], varcov)
-      else     
-        sadmvn(lower=rep(-Inf, d), upper=x[j,], mean[j,], varcov, ...) 
+    for (j in 1:n) 
+      p <- pv[j] <- {
+        if(d == 2)
+          biv.nt.prob(Inf, lower=rep(-Inf, 2), upper=x[j,], mean[j,], varcov)   
+        else if(d == 3) 
+          ptriv.nt(Inf, x=x[j,], mean[j,], varcov)
+            else     
+             sadmvn(lower=rep(-Inf, d), upper=x[j,], mean[j,], varcov, ...) 
+        }     
     if(n > 1) p <- pv 
     }
   return(p)  
@@ -74,6 +77,8 @@ sadmvn <- function(lower, upper, mean, varcov,
     infin <- infin[k]
     if(d == 2) return(biv.nt.prob(Inf, lower, upper, rep(0,2), rho))
     }
+  if(d > 20) # 2022-09-21, overrides a "0 value & error msg" from sadmvn 
+     return(NA)
   lower <- replace(lower, lower == -Inf, 0)
   upper <- replace(upper, upper == Inf, 0)
   correl <- as.double(rho[upper.tri(rho, diag=FALSE)])
@@ -139,12 +144,15 @@ pmt <- function(x, mean=rep(0, d), S, df=Inf, ...){
   if(is.vector(mean)) mean <- outer(rep(1, n), as.vector(matrix(mean,d)))
   if(d == 1) p <- as.vector(pt((x-mean)/sqrt(S), df=df)) else {
     pv <- numeric(n)
-    for (j in 1:n) p <- pv[j] <- if(d == 2)
-         biv.nt.prob(df, lower=rep(-Inf, 2), upper=x[j,], mean[j,], S)  
-      else if(d == 3)
-        ptriv.nt(df, x=x[j,], mean=mean[j,], S)      
-      else 
-        sadmvt(df, lower=rep(-Inf, d), upper=x[j,], mean[j,], S, ...)
+    for (j in 1:n) 
+       p <- pv[j] <- {
+         if(d == 2)
+           biv.nt.prob(df, lower=rep(-Inf, 2), upper=x[j,], mean[j,], S)  
+          else if(d == 3)
+            ptriv.nt(df, x=x[j,], mean=mean[j,], S)      
+              else 
+                sadmvt(df, lower=rep(-Inf, d), upper=x[j,], mean[j,], S, ...)
+         }
      if(n > 1) p <- pv    
      }
   return(p)  
@@ -184,6 +192,8 @@ sadmvt <- function(df, lower, upper, mean, S,
     infin <- infin[k]
     if(d == 2) return(biv.nt.prob(df, lower, upper, rep(0,2), rho))
     }
+  if(d > 20) # 2022-09-21, overrides a "0 value & error msg" from sadmvn 
+     return(NA)  
   lower <- replace(lower, lower == -Inf, 0)
   upper <- replace(upper, upper == Inf, 0)
   correl <- rho[upper.tri(rho, diag=FALSE)]

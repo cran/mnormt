@@ -6,7 +6,8 @@
 \title{The multivariate normal distribution}
 \description{
   The probability density function, the distribution function and random
-  number generation for the multivariate normal (Gaussian) distribution
+  number generation for a \code{d}-dimensional multivariate normal (Gaussian) 
+  random variable.
 }
 \usage{
 dmnorm(x, mean = rep(0, d), varcov, log = FALSE) 
@@ -16,9 +17,9 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000*d, abseps = 1e-06, releps = 0)
 }
 \arguments{
   \item{x}{either a vector of length \code{d} or a matrix with \code{d}
-    columns, where \code{d=ncol(varcov)}, representing
-    the coordinates of the point(s) where the density must
-    be evaluated.}
+    columns representing  the coordinates of the
+    point(s) where the density must be evaluated; 
+    see also \sQuote{Details} for restrictions on \code{d}.}
     
   \item{mean}{either a vector of length \code{d}, representing the mean value,
     or (except for \code{rmnorm}) a matrix whose rows represent different 
@@ -56,15 +57,18 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000*d, abseps = 1e-06, releps = 0)
 }
 
 
-\details{The dimension \code{d} cannot exceed \code{20} for \code{pmnorm}.
+\details{
+  The dimension \code{d} cannot exceed \code{20} for \code{pmnorm} and 
+  \code{sadmvn}. If this threshold is exceeded, \code{NA} is returned.
 
   The function \code{pmnorm} works by making a suitable call to
   \code{sadmvn} if \code{d>3},  or to \code{ptriv.nt} if \code{d=3},
   or to \code{biv.nt.prob} if \code{d=2},  or to \code{pnorm} if \code{d=1}.
-  The \R functions \code{sadmvn}, \code{ptriv.nt} and \code{biv.nt.prob} 
-  are, in essence,  interfaces to underlying Fortran-77 routines by Alan Genz;
-  see the references below. These routines use adaptive numerical quadrature
-  and other non-random type techniques.
+  The \R functions \code{sadmvn}, \code{ptriv.nt} and \code{biv.nt.prob} are,
+  in essence, interfaces to underlying \acronym{Fortran 77} routines by Alan 
+  Genz; see the references below.  
+  These routines use adaptive numerical quadrature and other non-random 
+  type techniques.
 
   If \code{sqrt=NULL} (default value), the working of \code{rmnorm} involves 
   computation of a square root of \code{varcov} via the Cholesky decomposition.
@@ -109,13 +113,13 @@ sadmvn(lower, upper, mean, varcov, maxpts = 2000*d, abseps = 1e-06, releps = 0)
   multivariate normal probabilities. 
   \emph{Computing Science and Statistics}, \bold{25}, 400-405.
   
-  Genz, A.:  Fortran77 code downloaded in 2005 and again in 2007 
-  from his web-page,  whose URL as of 2020-04-28 is 
+  Genz, A.:  Fortran 77 code downloaded in 2005 and again in 2007 
+  from his web-page,  whose \acronym{URL} as of 2020-04-28 was
   \url{https://www.math.wsu.edu/faculty/genz/software/software.html}
   }
 
 \author{
-  \acronym{FORTRAN-77} code of \code{SADMVN}, package \code{mvtdstpack.f}, 
+  \acronym{FORTRAN 77} code of \code{SADMVN}, package \code{mvtdstpack.f}, 
   package \code{tvpack}  and most auxiliary functions by Alan Genz; 
   some additional auxiliary functions by people referred to within his programs;  
   interface to \R and additional \R code (for \code{dmnormt}, 

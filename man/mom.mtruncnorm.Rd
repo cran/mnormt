@@ -19,17 +19,18 @@ mom.mtruncnorm(powers=4, mean, varcov, lower, upper, cum = TRUE, ...)
 \arguments{
   \item{powers}{a vector of non-negative integer values representing the 
        required order of moments for each component variable, or a single
-       such value, in which case this value is repeated for all \code{d}
-       components.}
-  \item{mean}{a vector representing the mean value of the pre-truncation normal 
-       random variable.}
-  \item{varcov}{a symmetric positive-definite matrix representing the variance
-       matrix of the pre-truncation normal random variable.}
-  \item{lower}{a vector representing the lower truncation values of the   
-       component variables; \code{-Inf} values are allowed. 
+       such value, in which case this value is repeated for all component 
+       variables.}
+  \item{mean}{a \code{d}-length vector representing the mean value of 
+       the pre-truncation normal random variable.  If \code{d=length(mean)}, 
+       see \sQuote{Details} for restrictions on \code{d}.}
+  \item{varcov}{a symmetric positive definite matrix with dimensions \code{(d,d)}
+       representing the variance  matrix of the pre-truncation normal random variable.}
+  \item{lower}{a \code{d}-vector representing the lower truncation values    
+       of the component variables; \code{-Inf} values are allowed. 
        If missing, it is set equal to \code{rep(-Inf, d)}.}
-  \item{upper}{a vector representing the upper truncation values of the 
-       component variables; \code{Inf} values are allowed.
+  \item{upper}{a \code{d}-vector representing the upper truncation values  
+       of the component variables; \code{Inf} values are allowed.
        If missing, it is set equal to \code{rep(Inf, d)}.}
   \item{cum}{a logical value; if  code{TRUE}  (default value), cumulants 
        are other quantities are computed up to the minimum between the fourth
@@ -39,6 +40,10 @@ mom.mtruncnorm(powers=4, mean, varcov, lower, upper, cum = TRUE, ...)
   }
   
 \details{
+The maximal value of {d} is \code{20}. If this threshold is exceeded, \code{NA}s
+are returned. The constraint originates from the underlying function 
+\code{\link{sadmvn}}.
+
 This function makes use of two workhorses, \code{recintab} and \code{mom2cum}, 
 providing a user-friendly interface to these more basic tools. 
 The first function computes an array of raw moments of the truncated normal; 

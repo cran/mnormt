@@ -7,8 +7,8 @@
 
 \description{
   The probability density function, the distribution function and random
-  number generation for the multivariate truncated normal (Gaussian)
-  distribution
+  number generation for the \code{d}-dimensional truncated normal (Gaussian)
+  random variable.
 }
 \usage{
 dmtruncnorm(x, mean, varcov, lower, upper, log = FALSE, ...)
@@ -18,16 +18,17 @@ rmtruncnorm(n, mean, varcov, lower, upper, start, burnin=5, thinning=1)
  
 \arguments{
   \item{x}{either a vector of length \code{d} or a matrix with \code{d}
-    columns, where \code{d=ncol(varcov)}, representing  the coordinates of 
-    the point(s) where the density must be evaluated. }
-  \item{mean}{a vector representing the mean value of the pre-truncation normal 
+    columns,representing  the coordinates of the point(s) where the density 
+    must be evaluated.  
+    Here we denote \code{d=ncol(varcov)}; see \sQuote{Details} for restrictions.}
+  \item{mean}{a \code{d}-vector representing the mean value of the pre-truncation normal 
     distribution.}
-  \item{varcov}{a symmetric positive-definite matrix representing the variance
-    matrix of the pre-truncation normal distribution.}
-  \item{lower}{a vector representing the lower truncation values of the   
+  \item{varcov}{a symmetric positive definite matrix with dimensions \code{(d,d)} 
+    representing the variance matrix of the pre-truncation normal distribution.}
+  \item{lower}{a \code{d}-vector representing the lower truncation values of the   
     component variables; \code{-Inf} values are allowed. 
     If missing, it is set equal to \code{rep(-Inf, d)}.}
-  \item{upper}{a vector representing the upper truncation values of the 
+  \item{upper}{a \code{d}-vector representing the upper truncation values of the 
     component variables; \code{Inf} values are allowed.
     If missing, it is set equal to \code{rep(Inf, d)}.}
 
@@ -50,12 +51,14 @@ rmtruncnorm(n, mean, varcov, lower, upper, start, burnin=5, thinning=1)
 
 \details{For \code{dmtruncnorm} and \code{pmtruncnorm},  
 the dimension \code{d} cannot exceed \code{20}.
+If this threshold is exceeded, \code{NA}s are returned. 
+The constraint originates from the underlying function  \code{\link{sadmvn}}.
 
 If \code{d>1}, \code{rmtruncnorm} uses a Gibbs sampling scheme as described by
 Breslaw (1994) and by Kotecha & Djurić (1999), 
 Detailed algebraic expressions are provided by Wilhelm (2022).
 After some initial settings in \R, the core iteration is performed by 
-a compiled \acronym{FORTRAN-77} subroutine, for numerical efficiency. 
+a compiled \acronym{FORTRAN 77} subroutine, for numerical efficiency. 
 
 If the \code{start} vector is not supplied, the mean value of the truncated
 distribution is used. This choice should provide a good starting point for the
